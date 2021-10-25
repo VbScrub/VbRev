@@ -1,0 +1,139 @@
+﻿<local:TabPage x:Class="FileSystemPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:VbRevUi"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="600" x:Name="FileSystemPage" KeyDown="FileSystemPage_KeyDown" Loaded="FileSystemPage_Loaded">
+    <local:TabPage.Resources>
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+        </Style>
+    </local:TabPage.Resources>
+    <Grid>
+        <DockPanel Margin="4" Name="FilesPanel" >
+            <Grid DockPanel.Dock="Top" Height="26">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="30" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0" Name="FilesUpLevelBtn" Width="25" Height="24" Click="FilesUpLevelBtn_Click" ToolTip="Move up directory level">
+                    <Image Height="15" Source="/VbRevUi;component/Images/up.png" />
+                </Button>
+                <TextBox Grid.Column="1" Name="AddressBarEditBox" VerticalContentAlignment="Center" LostFocus="AddressBarEditBox_LostFocus" KeyDown="AddressBarEditBox_KeyDown" Visibility="Collapsed" HorizontalAlignment="Stretch" />
+                <ListBox Grid.Column="1" Name="AddressBarBreadcrumbBox" Margin="2,0,0,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemContainerStyle="{StaticResource ListBoxItemNoHighlightStyle}" MouseLeftButtonUp="AddressBarBox_MouseLeftButtonUp" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                    <ListBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Copy" Name="BreadcrumbCopyMenuItem" Click="BreadcrumbCopyMenuItem_Click" />
+                            <MenuItem Header="Edit" Name="BreadcrumbEditMenuItem" Click="BreadcrumbEditMenuItem_Click" />
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" Background="#FFE9F0F8" />
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel VerticalAlignment="Center" Height="27" Orientation="Horizontal" Margin="0,-2,0,0">
+                                <Button DataContext="{Binding }" Padding="3,0,3,0" Style="{DynamicResource BreadcrumbStyle}" Click="BreadcrumbItem_Click">
+                                    <TextBlock Text="{Binding Name}" />
+                                </Button>
+                                <Button Content="\" Padding="4,0,2,0" Style="{DynamicResource BreadcrumbSeparatorStyle}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <Button Grid.Column="2" Name="FilesRefreshBtn" Click="FilesRefreshBtn_Click" DockPanel.Dock="Right" ToolTip="Refresh" Width="26" Height="24" HorizontalAlignment="Left" Margin="2,0,0,0">
+                    <Image Height="18" Source="/VbRevUi;component/Images/refresh_24.png" />
+                </Button>
+                <StackPanel  Margin="7,0,0,0" Orientation="Horizontal" VerticalAlignment="Stretch" Grid.Column="3">
+                    <TextBlock Text="Search: " VerticalAlignment="Center" />
+                    <TextBox VerticalContentAlignment="Center" Name="FileSearchBox" Width="120"/>
+                    <Button Name="SearchFilesBtn" Width="26" Height="24" Margin="2,0,0,0">
+                        <Image Height="17"  Source="/VbRevUi;component/Images/zoom_24.png" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+          
+            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,6,0,0">
+                <Button Name="NewDirBtn" IsEnabled="True" Content="New Folder" Height="23" Padding="12,0,12,0" />
+                <Button Name="RenameFileBtn" IsEnabled="False" Content="Rename" Height="23" Padding="12,0,12,0" Margin="22,0,0,0"/>
+                <Button Name="DeleteFileBtn" IsEnabled="False" Content="Delete" Height="23" Padding="12,0,12,0" Margin="7,0,0,0" />
+                <Button Name="ViewFilePermissionsBtn" IsEnabled="False" Content="View ACL" Height="23" Padding="12,0,12,0" Margin="7,0,0,0" />
+                <Button Name="DownloadFileBtn" IsEnabled="False" Content="Download" Height="23" Padding="12,0,12,0" Margin="22,0,0,0" />
+                <Button Name="UploadFileBtn" Content="Upload" Height="23" Margin="7,0,0,0" Padding="12,0,12,0" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Name="NewFolderPanel" Margin="0,6,0,2" Visibility="Collapsed">
+                <Image Stretch="None" Margin="0,-1,0,0" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/VbRevUi;component/Images/folder_16.png" />
+                <TextBlock Text="Name: " VerticalAlignment="Center" Margin="3,0,0,0" />
+                <TextBox Name="NewFolderBox" Width="140" Margin="2,0,0,0" KeyDown="NewFolderBox_KeyDown" />
+                <Button Name="NewFolderConfirmBtn" Height="23" Margin="4,0,0,0" Content="OK" Padding="8,0,8,0" />
+                <Button Name="CancelNewFolderBtn" Height="23" Margin="5,0,0,0" Content="Cancel" Padding="10,0,10,0" />
+            </StackPanel>
+            <Grid>
+                <ListView Name="FilesBox" Margin="0,4,0,0" KeyDown="FilesBox_KeyDown" AllowDrop="True" Drop="FilesBox_Drop" SelectionChanged="FilesBox_SelectionChanged" MouseDoubleClick="FilesBox_MouseDoubleClick" MouseDown="FilesBox_MouseDown_1">
+                    <ListView.Resources>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                        </Style>
+                    </ListView.Resources>
+                    <ListView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Download" Name="FilesDownloadMenuItem" Click="FilesDownloadMenuItem_Click" />
+                            <Separator />
+                            <MenuItem Header="Copy Name" Name="FilesCopyNameMenuItem" Click="FilesCopyNameMenuItem_Click" />
+                            <MenuItem Header="Copy Full Path" Name="FilesCopyPathMenuItem" Click="FilesCopyPathMenuItem_Click" />
+                            <Separator />
+                            <MenuItem Header="Rename" Name="FilesRenameMenuItem" Click="FilesRenameMenuItem_Click" />
+                            <MenuItem Header="Delete" Name="FilesDeleteMenuItem" Click="FilesDeleteMenuItem_Click" />
+                            <Separator />
+                            <MenuItem Header="Open Command Prompt Here" Name="OpenCmdHereMenuItem" Click="OpenCmdHereMenuItem_Click" />
+
+                        </ContextMenu>
+                    </ListView.ContextMenu>
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Width="300">
+                                <GridViewColumn.Header>
+                                    <TextBlock Text="Name" />
+                                </GridViewColumn.Header>
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <DockPanel Height="18" VerticalAlignment="Center">
+                                                <Image Height="16" DockPanel.Dock="Left" Width="16" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="{Binding Icon}" />
+                                                <TextBlock Visibility="{Binding NameLblVisibility}" VerticalAlignment="Center" Margin="4,0,0,0" Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                            </DockPanel>
+                                            <TextBox Margin="19,0,0,0" DataContext="{Binding }" IsVisibleChanged="RenameBox_IsVisibleChanged" LostFocus="RenameFileBox_LostFocus" KeyDown="RenameFileBox_KeyDown" Text="{Binding Path=RenameBoxText,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding RenameBoxVisibility}" Width="160" VerticalContentAlignment="Center" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Width="70" DisplayMemberBinding="{Binding Size}">
+                                <GridViewColumn.Header>
+                                    <TextBlock Text="Size" />
+                                </GridViewColumn.Header>
+                            </GridViewColumn>
+                            <GridViewColumn Width="105" DisplayMemberBinding="{Binding CreatedDate}">
+                                <GridViewColumn.Header>
+                                    <TextBlock Text="Created" />
+                                </GridViewColumn.Header>
+                            </GridViewColumn>
+                            <GridViewColumn Width="105" DisplayMemberBinding="{Binding ModifiedDate}">
+                                <GridViewColumn.Header>
+                                    <TextBlock Text="Modified" />
+                                </GridViewColumn.Header>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+                <!--<TextBlock Name="DropPreviewLbl" Visibility="Collapsed" Text="Drop files to upload to remote machine" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center" />-->
+            </Grid>
+          </DockPanel>
+    </Grid>
+</local:TabPage>

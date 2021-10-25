@@ -1,0 +1,41 @@
+﻿<UserControl x:Class="CmdLineTabItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="500">
+    <UserControl.Resources>
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="30" MinHeight="30" />
+        </Grid.RowDefinitions>
+        <DockPanel>
+            <Grid DockPanel.Dock="Top" Margin="1,6,0,6">
+                <WrapPanel VerticalAlignment="Center">
+                    <TextBlock Text="Status: " VerticalAlignment="Center" />
+                    <TextBlock Name="StatusLbl" Foreground="Black" TextWrapping="Wrap" Text="Running"  VerticalAlignment="Center"  Margin="3,0,0,0" />
+                    <ProgressBar Name="ProgBar" IsIndeterminate="True" Height="19" Visibility="Collapsed" Width="120" Margin="6,0,0,0" />
+                    <!--<Button Name="EndProcessBtn" HorizontalAlignment="Right" Content="End Process" Height="22" Padding="12,0,12,0" Margin="12,0,0,0" />-->
+                </WrapPanel>
+               
+            </Grid>
+             
+             <TextBox x:Name="CmdOutputBox" Margin="0,0,0,4" IsReadOnly="True" VerticalScrollBarVisibility="Visible" FontFamily="Consolas" TextWrapping="Wrap" Background="Black" Foreground="White" />
+        </DockPanel>
+       
+       
+        <GridSplitter VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="4" Background="LightGray" />
+        <DockPanel Grid.Row="1" Margin="0,3,0,0" Name="SendCommandPanel" >
+            <TextBlock Text="Command: " VerticalAlignment="Top" Margin="0,5,2,0" DockPanel.Dock="Left" />
+            <Button Name="ExecuteCmdBtn" VerticalAlignment="Top" DockPanel.Dock="Right" Margin="3,1,0,0" Content="Send" IsDefault="True" Height="25" Padding="14,0,14,0" />
+            <TextBox x:Name="CmdBox" TextWrapping="Wrap" PreviewKeyDown="CmdBox_PreviewKeyDown" Padding="0,3,0,0" />
+        </DockPanel>
+    </Grid>
+   
+</UserControl>

@@ -1,0 +1,105 @@
+﻿<local:TabPage x:Class="NetworkingPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             xmlns:local="clr-namespace:VbRevUi"
+             d:DesignHeight="490" d:DesignWidth="485">
+    <local:TabPage.Resources>
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+        </Style>
+    </local:TabPage.Resources>
+    <Grid>
+        <TabControl Margin="4,10,4,4">
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="Interfaces" />
+                </TabItem.Header>
+                <StackPanel Margin="6,10,6,6" VerticalAlignment="Top">
+                    <Button Height="23" Name="RefreshInterfacesBtn" Content="Load" Padding="18,0,18,0" HorizontalAlignment="Left" />
+                    <TextBlock Text="Network Interfaces: " Margin="0,8,0,0" />
+                    <ListBox Name="InterfacesListbox" Height="110" SelectionMode="Single" Margin="0,3,0,0">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="1">
+                                    <Image Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" VerticalAlignment="Center" Source="/VbRevUi;component/Images/net_card_16.ico" />
+                                    <TextBlock VerticalAlignment="Center" Text="{Binding Name}" Margin="4,0,0,0" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <GroupBox Margin="0,10,0,0" DataContext="{Binding ElementName=InterfacesListbox,Path=SelectedItem}">
+                        <GroupBox.Header>
+                            <TextBlock Text="Details" />
+                        </GroupBox.Header>
+                        <Grid Margin="6">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="26" />
+                                <RowDefinition Height="26" />
+                                <RowDefinition Height="26" />
+                                <RowDefinition Height="26" />
+                                <RowDefinition Height="26" />
+                                <RowDefinition Height="26" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Text="Name: " />
+                            <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="4,0,0,0" Text="{Binding Name}" />
+                            <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Text="IPv4 Address: " />
+                            <TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="4,0,0,0" Text="{Binding IpAddressesV4}" />
+                            <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Text="IPv6 Address: " />
+                            <TextBlock Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Margin="4,0,0,0" Text="{Binding IpAddressesV6}" />
+                            <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Text="DNS Servers: " />
+                            <TextBlock Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Margin="4,0,0,0" Text="{Binding DnsAddresses}" />
+                            <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Text="Default Gateway: " />
+                            <TextBlock Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" Margin="4,0,0,0" Text="{Binding DefaultGateway}" />
+                            <TextBlock Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Text="MAC Address: " />
+                            <TextBlock Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" Margin="4,0,0,0" Text="{Binding MacAddress}" />
+                        </Grid>
+                    </GroupBox>
+                </StackPanel>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="TCP Listeners" />
+                </TabItem.Header>
+                <DockPanel Margin="6,10,6,6">
+                    <Grid DockPanel.Dock="Top" VerticalAlignment="Top">
+                        <Button HorizontalAlignment="Left" Height="23" Name="RefreshListenersBtn" Content="Load" Padding="18,0,18,0" />
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Image Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" VerticalAlignment="Center" Source="/VbRevUi;component/Images/zoom_16.png" />
+                            <TextBlock Text="Filter: " VerticalAlignment="Center" Margin="2,0,0,0" />
+                            <TextBox Width="150" Name="FilterListenersBox" TextChanged="FilterListenersBox_TextChanged" />
+                        </StackPanel>
+                    </Grid>
+                    <!--<TextBlock TextWrapping="Wrap" Text="Remote machine is listening for incoming TCP connections on:" DockPanel.Dock="Top" Margin="0,7,0,0" />-->
+                    <ListView Name="ListenersListView" Margin="0,5,0,0">
+                        <ListView.Resources>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                            </Style>
+                        </ListView.Resources>
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Address" Width="120" DisplayMemberBinding="{Binding IpAddress}" />
+                                <GridViewColumn Header="Port" Width="90" DisplayMemberBinding="{Binding Port}" />
+                                <GridViewColumn Header="Process Name" Width="160" DisplayMemberBinding="{Binding ProcessName}" />
+                                <GridViewColumn Header="Process ID" Width="90" DisplayMemberBinding="{Binding PID}" />
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </DockPanel>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="Port Forwarding" />
+                </TabItem.Header>
+
+            </TabItem>
+        </TabControl>
+    </Grid>
+</local:TabPage>

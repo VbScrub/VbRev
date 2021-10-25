@@ -1,0 +1,58 @@
+﻿<local:TabPage x:Class="ServicesPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             xmlns:local="clr-namespace:VbRevUi"
+             d:DesignHeight="300" d:DesignWidth="690">
+    <local:TabPage.Resources>
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+        </Style>
+    </local:TabPage.Resources>
+    <Grid>
+        <DockPanel Margin="6,10,6,6">
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+                <Button Name="RefreshBtn" Content="Load" Padding="20,0,20,0" Height="23" VerticalAlignment="Center" />
+                <TextBlock Text="Get services from: " VerticalAlignment="Center" Margin="10,0,0,0" />
+                <RadioButton Name="ScmRadio" IsChecked="True" Margin="3,0,0,0" VerticalAlignment="Center">
+                    <TextBlock Text="Service API" Margin="2,0,0,0" />
+                </RadioButton>
+                <RadioButton Name="RegistryRadio" Margin="9,0,0,0" VerticalAlignment="Center">
+                    <TextBlock Text="Registry" Margin="2,0,0,0" />
+                </RadioButton>
+            </StackPanel>
+            <WrapPanel DockPanel.Dock="Bottom" Margin="0,6,0,0">
+                <Button Name="StartBtn" Height="23" Content="Start" Width="75" />
+                <Button Name="StopBtn" Height="23" Content="Stop" Width="75" Margin="7,0,0,0" />
+                <Button Name="ViewAclBtn" Height="23" Content="View ACL" Width="85" Margin="7,0,0,0" />
+            </WrapPanel>
+            <ListView Margin="0,6,0,0" Name="ServicesListView" SelectionMode="Single">
+                <ListView.Resources>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                    </Style>
+                </ListView.Resources>
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Name="StartMenuItem" Click="StartMenuItem_Click" Header="Start" />
+                        <MenuItem Name="StopMenuItem" Click="StopMenuItem_Click" Header="Stop" />
+                        <Separator />
+                        <MenuItem Name="ViewAclMenuItem" Click="ViewAclMenuItem_Click" Header="View ACL" />
+                    </ContextMenu>
+                </ListView.ContextMenu>
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Display Name" Width="180" />
+                        <GridViewColumn Header="Service Name" Width="120" />
+                        <GridViewColumn Header="State" Width="80" />
+                        <GridViewColumn Header="Running As" Width="140" />
+                        <!--<GridViewColumn Header="Type" Width="80" />-->
+                        <GridViewColumn Header="Executable" Width="180" />
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </DockPanel>
+    </Grid>
+</local:TabPage>

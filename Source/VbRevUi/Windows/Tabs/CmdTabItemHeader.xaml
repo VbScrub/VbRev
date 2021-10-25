@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="CmdTabItemHeader"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="39" d:DesignWidth="146">
+    <UserControl.Resources>
+        <Style x:Key="TabCloseBtn" TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Name="BtnBd" BorderBrush="Transparent" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="9" SnapsToDevicePixels="True" Width="24">
+                            <TextBlock x:Name="Txt" VerticalAlignment="Center" HorizontalAlignment="Center" Text="x" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Margin="6,0,6,2"   />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="BtnBd" Property="Border.Background" Value="LightGray" />
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="DarkGray" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </UserControl.Resources>
+    <Grid>
+        <ContentControl x:Name="TabHeaderContent" MouseDoubleClick="TabHeaderContent_MouseDoubleClick">
+            <StackPanel Orientation="Horizontal" Height="23">
+                <Image Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="{Binding Icon}" />
+                <TextBox x:Name="RenameBox" KeyDown="RenameBox_KeyDown" LostFocus="RenameBox_LostFocus" Visibility="Collapsed" Width="90" Height="21" VerticalContentAlignment="Top" />
+                <TextBlock Name="TitleLbl" Text="{Binding Title}"  Margin="3,0,0,0" VerticalAlignment="Center" TextOptions.TextFormattingMode="Display" />
+                <Button x:Name="CloseTabBtn" Style="{StaticResource TabCloseBtn}" ToolTip="Close tab and terminate remote process" Margin="6,0,0,0" Click="CloseTabBtn_Click" VerticalContentAlignment="Center" >
+                    <TextBlock FontWeight="Bold" Text="X" Foreground="DarkRed" />
+                </Button>
+            </StackPanel>
+        </ContentControl>
+    </Grid>
+</UserControl>
