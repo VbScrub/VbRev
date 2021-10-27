@@ -278,11 +278,7 @@ Public Class FileSystemPage
     End Sub
 
     Private Sub SearchFilesBtn_Click(sender As System.Object, e As System.Windows.RoutedEventArgs) Handles SearchFilesBtn.Click
-        NotInBeta()
-    End Sub
-
-    Private Sub NotInBeta()
-        MessageBox.Show("This feature has not yet been implemented", "Too Soon", MessageBoxButton.OK, MessageBoxImage.Information)
+        AppHelper.NotInBeta()
     End Sub
 
     Private Sub RenameFileBtn_Click(sender As System.Object, e As System.Windows.RoutedEventArgs) Handles RenameFileBtn.Click
@@ -428,7 +424,7 @@ Public Class FileSystemPage
 
     Private Sub ServerDeleteFiles()
         If Not FilesBox.SelectedItems Is Nothing AndAlso FilesBox.SelectedItems.Count > 0 Then
-            If MessageBox.Show("Are you sure you want to delete " & FilesBox.SelectedItems.Count & " item" & CStr(IIf(FilesBox.SelectedItems.Count > 1, "s", String.Empty)) & " from the remote machine?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning) = MessageBoxResult.Yes Then
+            If MessageBox.Show("Are you sure you want to delete " & FilesBox.SelectedItems.Count & " item" & If(FilesBox.SelectedItems.Count > 1, "s", String.Empty) & " from the remote machine?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning) = MessageBoxResult.Yes Then
                 Try
                     Dim FileList As New List(Of FileSystemItem)
                     For Each FileVM As FileSystemItemVM In FilesBox.SelectedItems
@@ -448,7 +444,7 @@ Public Class FileSystemPage
             If Me.IsLoaded Then
                 Try
                     If String.IsNullOrEmpty(ErrorMessage) Then
-                        RaiseSendingServerRequestFinishedEvent(SuccessfullyDeletedFiles.Count & " file" & CStr(IIf(SuccessfullyDeletedFiles.Count > 1, "s", String.Empty)) & " deleted")
+                        RaiseSendingServerRequestFinishedEvent(SuccessfullyDeletedFiles.Count & " file" & If(SuccessfullyDeletedFiles.Count > 1, "s", String.Empty) & " deleted")
                         For Each DeletedFile As String In SuccessfullyDeletedFiles
                             For i As Integer = _Files.Count - 1 To 0 Step -1
                                 If _Files(i).Name = DeletedFile Then
@@ -563,7 +559,7 @@ Public Class FileSystemPage
     End Sub
 
     Private Sub ViewFilePermissionsBtn_Click(sender As System.Object, e As System.Windows.RoutedEventArgs) Handles ViewFilePermissionsBtn.Click
-        NotInBeta()
+        AppHelper.NotInBeta()
     End Sub
 
     Private Sub OpenCmdHereMenuItem_Click(sender As System.Object, e As System.Windows.RoutedEventArgs)

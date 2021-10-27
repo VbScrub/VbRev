@@ -1,7 +1,7 @@
 ﻿<Window x:Class="MachineInfoWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="Remote Machine Details" SizeToContent="Height" Width="410" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Icon="/VbRevUi;component/Images/monitor_info_48.png">
+    Title="Remote Machine Details" SizeToContent="Height" Width="420" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Icon="/VbRevUi;component/Images/monitor_info_48.png">
     <Window.Resources>
         <Style TargetType="TextBlock">
             <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
@@ -42,7 +42,7 @@
                         <TextBlock Text="Name:" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" />
                         <TextBlock Name="NameLbl" Margin="8,0,0,0" VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" />
                         <TextBlock Text="Domain:" VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" />
-                        <TextBlock Name="DomainLbl" Margin="8,0,0,0" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" />
+                        <TextBlock Name="DomainLbl" Margin="8,0,0,0" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" TextWrapping="Wrap" />
                         <TextBlock Text="OS Name:" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0" />
                         <TextBlock Name="OsNameLbl" Margin="8,0,0,0" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" />
                         <TextBlock Text="OS Version:" VerticalAlignment="Center" Grid.Row="3" Grid.Column="0" />
@@ -53,6 +53,11 @@
                 </TabItem>
             </TabControl>
         </Grid>
-        <Button Grid.Row="2" Name="CloseBtn" IsCancel="True" HorizontalAlignment="Right" VerticalAlignment="Center" Height="23" Content="Close" Width="75" Margin="0,0,8,0"  />
+        <StackPanel Name="ProgressPanel" Orientation="Horizontal" Grid.Row="2" Margin="8,0,0,0">
+            <TextBlock Text="Waiting for server..." Foreground="LightGray" VerticalAlignment="Center" Margin="0,0,4,0" />
+            <ProgressBar IsIndeterminate="True" VerticalAlignment="Center" Height="19" Width="120" Margin="8,0,0,0" />
+        </StackPanel>
+      
+        <Button Grid.Row="2" Name="CloseBtn" IsEnabled="False" IsCancel="True" HorizontalAlignment="Right" VerticalAlignment="Center" Height="23" Content="Close" Width="75" Margin="0,0,8,0"  />
     </Grid>
 </Window>

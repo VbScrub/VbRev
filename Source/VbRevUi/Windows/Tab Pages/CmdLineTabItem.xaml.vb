@@ -20,6 +20,7 @@
                 BgThread.Start()
                 If String.Compare(IO.Path.GetFileName(Me._ClientVM.Data.File), "powershell.exe", True) = 0 Then
                     CmdOutputBox.Background = DirectCast(New BrushConverter().ConvertFrom("#FF012456"), Brush)
+                    CmdBox.AcceptsReturn = True
                 End If
             End If
             CmdBox.Focus()
@@ -29,22 +30,27 @@
     End Sub
 
     Private Sub ExecuteCmdBtn_Click(sender As System.Object, e As System.Windows.RoutedEventArgs) Handles ExecuteCmdBtn.Click
+        SubmitCmd()
+    End Sub
+
+    Private Sub SubmitCmd()
         If Not _ClientVM.Data.IsRunning Then
             MessageBox.Show("Unable to send input as the remote process is no longer running or we lost connection to it", "Cannot Send Input", MessageBoxButton.OK, MessageBoxImage.Warning)
             Exit Sub
         End If
-        If String.IsNullOrWhiteSpace(CmdBox.Text) Then
-            MessageBox.Show("Please enter the command text you would like to be sent to the remote process", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Warning)
-            Exit Sub
+        Dim CmdToSend As String = String.Empty
+        If Not String.IsNullOrWhiteSpace(CmdBox.Text) Then
+            CmdToSend = CmdBox.Text
+            _PreviousCommands.Add(CmdBox.Text)
+            _PreviousCommandIndex = _PreviousCommands.Count
+            CmdBox.Clear()
         End If
         UiSendingServerRequest("Sending command to server...")
         Dim BgThread As New System.Threading.Thread(AddressOf ServerSendInput)
         BgThread.IsBackground = False
         BgThread.Name = "CMD_SEND_THREAD"
-        BgThread.Start(CmdBox.Text)
-        _PreviousCommands.Add(CmdBox.Text)
-        _PreviousCommandIndex = _PreviousCommands.Count
-        CmdBox.Clear()
+        BgThread.Start(CmdToSend)
+
     End Sub
 
     Private Sub ServerSendInput(Msg As Object)
@@ -65,14 +71,6 @@
             UiSendingServerFinished(ErrorMsg)
         End If
     End Sub
-
-    'Private Sub EndProcessBtn_Click(sender As System.Object, e As System.Windows.RoutedEventArgs) Handles EndProcessBtn.Click
-    '    UiSendingServerRequest("Requesting process termination")
-    '    Dim BgThread As New System.Threading.Thread(AddressOf RequestProcessClose)
-    '    BgThread.IsBackground = False
-    '    BgThread.Name = "CMD_KILL_THREAD"
-    '    BgThread.Start()
-    'End Sub
 
     Private Sub UiSendingServerRequest(StatusMsg As String)
         StatusLbl.Text = StatusMsg
@@ -103,36 +101,32 @@
         End Try
     End Sub
 
-    'Private Sub SendCommandPanel_KeyDown(sender As System.Object, e As System.Windows.Input.KeyEventArgs)
-    '    CmdPanelKeyDown(e)
-    'End Sub
-
-    'Private Sub CmdBox_KeyDown(sender As System.Object, e As System.Windows.Input.KeyEventArgs)
-    '    CmdPanelKeyDown(e)
-    'End Sub
 
     Private Sub CmdPanelKeyDown(KeyPressArgs As KeyEventArgs)
-        If KeyPressArgs.Key = Key.Up Then
-            KeyPressArgs.Handled = True
-            If _PreviousCommands.Count > 0 Then
-                _PreviousCommandIndex -= 1
-                If _PreviousCommandIndex < 0 Then
-                    _PreviousCommandIndex = 0
+        Select Case KeyPressArgs.Key
+            Case Key.Up
+                KeyPressArgs.Handled = True
+                If _PreviousCommands.Count > 0 Then
+                    _PreviousCommandIndex -= 1
+                    If _PreviousCommandIndex < 0 Then
+                        _PreviousCommandIndex = 0
+                    End If
+                    CmdBox.Text = _PreviousCommands(_PreviousCommandIndex)
+                    CmdBox.CaretIndex = CmdBox.Text.Length
                 End If
-                CmdBox.Text = _PreviousCommands(_PreviousCommandIndex)
-                CmdBox.CaretIndex = CmdBox.Text.Length
-            End If
-        ElseIf KeyPressArgs.Key = Key.Down Then
-            KeyPressArgs.Handled = True
-            If _PreviousCommands.Count > 0 Then
-                _PreviousCommandIndex += 1
-                If _PreviousCommandIndex > _PreviousCommands.Count - 1 Then
-                    _PreviousCommandIndex = _PreviousCommands.Count - 1
+            Case Key.Down
+                KeyPressArgs.Handled = True
+                If _PreviousCommands.Count > 0 Then
+                    _PreviousCommandIndex += 1
+                    If _PreviousCommandIndex > _PreviousCommands.Count - 1 Then
+                        _PreviousCommandIndex = _PreviousCommands.Count - 1
+                    End If
+                    CmdBox.Text = _PreviousCommands(_PreviousCommandIndex)
+                    CmdBox.CaretIndex = CmdBox.Text.Length
                 End If
-                CmdBox.Text = _PreviousCommands(_PreviousCommandIndex)
-                CmdBox.CaretIndex = CmdBox.Text.Length
-            End If
-        End If
+            Case Key.Enter
+                SubmitCmd()
+        End Select
     End Sub
 
     Private Sub Client_DataReceived(Data As String)

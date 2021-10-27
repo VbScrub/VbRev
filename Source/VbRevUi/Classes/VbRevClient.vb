@@ -5,7 +5,6 @@
         Me.NetClient = Client
     End Sub
 
-
     Public Function GetInitialInfo() As ServerInfoResponseMessage
         Try
             NetClient.Send(New EmptyMessage(NetworkMessage.MessageType.ServerInfoRequest))
@@ -22,6 +21,11 @@
             End Try
             Throw
         End Try
+    End Function
+
+    Public Function GetOsInfo() As OsInfoResponseMessage
+        NetClient.Send(New EmptyMessage(NetworkMessage.MessageType.OsInfoRequest))
+        Return DirectCast(GetServerResponse(NetworkMessage.MessageType.OsInfoResponse), OsInfoResponseMessage)
     End Function
 
     

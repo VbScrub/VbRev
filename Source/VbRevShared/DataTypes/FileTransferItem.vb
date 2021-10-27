@@ -69,7 +69,7 @@
         Dim FileCreated As Boolean = False
         Dim CompletedSuccessfully As Boolean = False
         Try
-            Using File As New IO.FileStream(Me.OutputPath, DirectCast(IIf(Overwrite, IO.FileMode.Create, IO.FileMode.CreateNew), IO.FileMode), IO.FileAccess.ReadWrite)
+            Using File As New IO.FileStream(Me.OutputPath, If(Overwrite, IO.FileMode.Create, IO.FileMode.CreateNew), IO.FileAccess.ReadWrite, IO.FileShare.ReadWrite)
                 FileCreated = True
                 If Not ClientMode Then
                     'If running on server, client will be waiting for success or error message (so client can receive error message about initial file creation on server)
@@ -109,7 +109,7 @@
                             If Not TotalFileLength = 0 AndAlso Not BytesReceived = 0 Then
                                 ProgressPercentage = CInt((BytesReceived / TotalFileLength) * 100)
                             End If
-                            UpdateProgress(ProgressState.Transferring, ProgressPercentage, FileSystemHelper.GetFileSizeString(BytesReceived) & " / " & FileSystemHelper.GetFileSizeString(TotalFileLength) & " downloaded")
+                            UpdateProgress(ProgressState.Transferring, ProgressPercentage, FileHelper.GetFileSizeString(BytesReceived) & " / " & FileHelper.GetFileSizeString(TotalFileLength) & " downloaded")
                         End If
                     End If
                 Loop
@@ -121,7 +121,7 @@
             End If
         Catch ex As Exception
             Log.WriteEntry("File download error: " & ex.Message, False)
-           
+
             If Me.ClientMode Then
                 UpdateProgress(ProgressState.Failed, Nothing, ex.Message)
             Else
@@ -150,7 +150,7 @@
             Log.WriteEntry("Error deleting cancelled/failed file transfer: " & Ex.Message, False)
         End Try
     End Sub
-   
+
     'This can be running on both server and client
     Public Sub SendFile(NetClient As NetworkSession)
         If _Cancelled Then
@@ -162,7 +162,7 @@
         End If
 
         Try
-            Using File As New IO.FileStream(Me.SourcePath, IO.FileMode.Open, IO.FileAccess.Read)
+            Using File As New IO.FileStream(Me.SourcePath, IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.ReadWrite)
                 If ClientMode Then
                     Dim NetMsg As NetworkMessage = NetClient.ReceiveMessage()
                     If NetMsg.Type = NetworkMessage.MessageType.ErrorDetail Then
@@ -200,7 +200,7 @@
                         If Not File.Length = 0 AndAlso Not BytesSent = 0 Then
                             ProgressPercentage = CInt((BytesSent / File.Length) * 100)
                         End If
-                        UpdateProgress(ProgressState.Transferring, ProgressPercentage, FileSystemHelper.GetFileSizeString(BytesSent) & " / " & FileSystemHelper.GetFileSizeString(File.Length) & " uploaded")
+                        UpdateProgress(ProgressState.Transferring, ProgressPercentage, FileHelper.GetFileSizeString(BytesSent) & " / " & FileHelper.GetFileSizeString(File.Length) & " uploaded")
                     End If
                 Loop
                 Timer.Stop()

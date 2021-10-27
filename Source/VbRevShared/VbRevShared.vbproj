@@ -66,13 +66,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataTypes\NetworkInterfaceItem.vb" />
-    <Compile Include="FileSystemHelper.vb" />
+    <Compile Include="FileHelper.vb" />
     <Compile Include="DataTypes\FileTransferItem.vb" />
     <Compile Include="DataTypes\ListenerItem.vb" />
     <Compile Include="NetworkMessages\DeleteFilesRequestMessage.vb" />
     <Compile Include="NetworkMessages\DeleteFilesResponseMessage.vb" />
     <Compile Include="NetworkMessages\EnumNetworkInterfacesResponseMessage.vb" />
     <Compile Include="NetworkMessages\EnumProcessesResponseMessage.vb" />
+    <Compile Include="NetworkMessages\EnumServicesResponseMessage.vb" />
     <Compile Include="NetworkMessages\EnumTcpListenersResponseMessage.vb" />
     <Compile Include="NetworkMessages\FileTransferContentMessage.vb" />
     <Compile Include="NetworkMessages\EmptyMessage.vb" />
@@ -94,13 +95,14 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="NetworkMessages\OsInfoResponseMessage.vb" />
     <Compile Include="NetworkMessages\StartProcessRequestMessage.vb" />
     <Compile Include="NetworkSession.vb" />
     <Compile Include="NetworkMessages\NetworkMessage.vb" />
     <Compile Include="NetworkMessages\RenameFileRequestMessage.vb" />
     <Compile Include="NetworkMessages\ServerInfoResponseMessage.vb" />
     <Compile Include="NetworkMessages\SingleParamMessage.vb" />
-    <Compile Include="NewProcessArgs.vb" />
+    <Compile Include="DataTypes\NewProcessArgs.vb" />
     <Compile Include="DataTypes\ProcessItem.vb" />
     <Compile Include="DataTypes\ServiceItem.vb" />
     <Compile Include="WinApi.vb" />

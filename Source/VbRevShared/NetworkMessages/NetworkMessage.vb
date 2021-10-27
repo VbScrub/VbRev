@@ -5,7 +5,7 @@ Public Class NetworkMessage 'Base class inherited by all messages sent over netw
     '| Vb (2 bytes) | Length (4 bytes) | Type (4 bytes) | Data |
     '===========================================================
 
-    'NOTE: When adding new message type, add mapping to MessageTypeToCarrier property
+    'TODO: When adding new message type, add mapping to dictionary in MessageTypeToCarrier property
     Public Enum MessageType As Integer
         Unknown = 0
         Success = 1
@@ -40,12 +40,16 @@ Public Class NetworkMessage 'Base class inherited by all messages sent over netw
         EnumNetworkInterfacesResponse = 221
         EnumTcpListenersRequest = 222
         EnumTcpListenersResponse = 223
+        OsInfoRequest = 224
+        OsInfoResponse = 225
+        EnumServicesRequest = 226
+        EnumServicesResponse = 227
     End Enum
 
-    'NOTE: When adding a new item to this enum, add a corresponding Select Case branch to NetworkSession.ConstructMessage method
+    'TODO: When adding a new item to this enum add a corresponding Select Case branch to NetworkSession ConstructMessage method
     Public Enum MessageCarrierType As Integer
         Unknown
-        Empty
+        Void
         SingleParamString
         SingleParamBool
         SingleParamInt
@@ -59,6 +63,8 @@ Public Class NetworkMessage 'Base class inherited by all messages sent over netw
         EnumProcessesResponse
         EnumNetworkInterfacesResponse
         EnumTcpListenersResponse
+        OsInfoResponse
+        EnumServicesResponse
     End Enum
 
 
@@ -69,15 +75,15 @@ Public Class NetworkMessage 'Base class inherited by all messages sent over netw
             'message type even though several of them transfer the same data (single string etc)
             If _MessageTypeToCarrier Is Nothing Then
                 _MessageTypeToCarrier = New Dictionary(Of MessageType, MessageCarrierType)
-                _MessageTypeToCarrier.Add(MessageType.Success, MessageCarrierType.Empty)
-                _MessageTypeToCarrier.Add(MessageType.ErrorUnknown, MessageCarrierType.Empty)
+                _MessageTypeToCarrier.Add(MessageType.Success, MessageCarrierType.Void)
+                _MessageTypeToCarrier.Add(MessageType.ErrorUnknown, MessageCarrierType.Void)
                 _MessageTypeToCarrier.Add(MessageType.ErrorDetail, MessageCarrierType.SingleParamString)
-                _MessageTypeToCarrier.Add(MessageType.InvalidData, MessageCarrierType.Empty)
-                _MessageTypeToCarrier.Add(MessageType.KeepAlive, MessageCarrierType.Empty)
-                _MessageTypeToCarrier.Add(MessageType.KeepAliveResponse, MessageCarrierType.Empty)
-                _MessageTypeToCarrier.Add(MessageType.UnrecognisedMessageType, MessageCarrierType.Empty)
-                _MessageTypeToCarrier.Add(MessageType.StillWorking, MessageCarrierType.Empty)
-                _MessageTypeToCarrier.Add(MessageType.ServerInfoRequest, MessageCarrierType.Empty)
+                _MessageTypeToCarrier.Add(MessageType.InvalidData, MessageCarrierType.Void)
+                _MessageTypeToCarrier.Add(MessageType.KeepAlive, MessageCarrierType.Void)
+                _MessageTypeToCarrier.Add(MessageType.KeepAliveResponse, MessageCarrierType.Void)
+                _MessageTypeToCarrier.Add(MessageType.UnrecognisedMessageType, MessageCarrierType.Void)
+                _MessageTypeToCarrier.Add(MessageType.StillWorking, MessageCarrierType.Void)
+                _MessageTypeToCarrier.Add(MessageType.ServerInfoRequest, MessageCarrierType.Void)
                 _MessageTypeToCarrier.Add(MessageType.ServerInfoResponse, MessageCarrierType.ServerInfoResponse)
                 _MessageTypeToCarrier.Add(MessageType.EnumDirectoryRequest, MessageCarrierType.SingleParamString)
                 _MessageTypeToCarrier.Add(MessageType.EnumDirectoryResponse, MessageCarrierType.EnumDirectoryResponse)
@@ -92,14 +98,18 @@ Public Class NetworkMessage 'Base class inherited by all messages sent over netw
                 _MessageTypeToCarrier.Add(MessageType.CmdLineOutputResponse, MessageCarrierType.SingleParamString)
                 _MessageTypeToCarrier.Add(MessageType.CmdLineInputRequest, MessageCarrierType.SingleParamString)
                 _MessageTypeToCarrier.Add(MessageType.StartCmdLineRequest, MessageCarrierType.StartProcessRequest)
-                _MessageTypeToCarrier.Add(MessageType.CmdLineClosedNotification, MessageCarrierType.Empty)
-                _MessageTypeToCarrier.Add(MessageType.EnumProcessesRequest, MessageCarrierType.Empty)
+                _MessageTypeToCarrier.Add(MessageType.CmdLineClosedNotification, MessageCarrierType.Void)
+                _MessageTypeToCarrier.Add(MessageType.EnumProcessesRequest, MessageCarrierType.Void)
                 _MessageTypeToCarrier.Add(MessageType.EnumProcessesResponse, MessageCarrierType.EnumProcessesResponse)
                 _MessageTypeToCarrier.Add(MessageType.CreateDirectoryRequest, MessageCarrierType.SingleParamString)
-                _MessageTypeToCarrier.Add(MessageType.EnumNetworkInterfacesRequest, MessageCarrierType.Empty)
+                _MessageTypeToCarrier.Add(MessageType.EnumNetworkInterfacesRequest, MessageCarrierType.Void)
                 _MessageTypeToCarrier.Add(MessageType.EnumNetworkInterfacesResponse, MessageCarrierType.EnumNetworkInterfacesResponse)
-                _MessageTypeToCarrier.Add(MessageType.EnumTcpListenersRequest, MessageCarrierType.Empty)
+                _MessageTypeToCarrier.Add(MessageType.EnumTcpListenersRequest, MessageCarrierType.Void)
                 _MessageTypeToCarrier.Add(MessageType.EnumTcpListenersResponse, MessageCarrierType.EnumTcpListenersResponse)
+                _MessageTypeToCarrier.Add(MessageType.OsInfoRequest, MessageCarrierType.Void)
+                _MessageTypeToCarrier.Add(MessageType.OsInfoResponse, MessageCarrierType.OsInfoResponse)
+                _MessageTypeToCarrier.Add(MessageType.EnumServicesRequest, MessageCarrierType.SingleParamBool)
+                _MessageTypeToCarrier.Add(MessageType.EnumServicesResponse, MessageCarrierType.EnumServicesResponse)
             End If
             Return _MessageTypeToCarrier
         End Get
@@ -168,7 +178,7 @@ Public Class NetworkMessage 'Base class inherited by all messages sent over netw
         End Try
     End Function
 
-    'If child class does not override this, we just use the built in binary serialization
+
     Public Overridable Function FromBytes(Bytes() As Byte) As NetworkMessage
         Using MemStrm As New IO.MemoryStream(Bytes, ProtocolId.Length + 8, Bytes.Length - (ProtocolId.Length + 8))
             Return DirectCast(_Formatter.Deserialize(MemStrm), NetworkMessage)

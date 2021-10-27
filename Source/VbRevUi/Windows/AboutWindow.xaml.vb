@@ -14,6 +14,6 @@
 
     Private Sub Window_Loaded(sender As System.Object, e As System.Windows.RoutedEventArgs) Handles MyBase.Loaded
         VersionLbl.Text = My.Application.Info.Version.ToString
-        BuildDateLbl.Text = "2nd May 2020"
+        BuildDateLbl.Text = "23rd June 2020"
     End Sub
 End Class

@@ -31,7 +31,6 @@ Public Class VbRevServer
     End Sub
 
     Private Sub RunServer()
-        'Keeps looping and processing incoming messages
         Do
             Dim Message As NetworkMessage = Nothing
             Try
@@ -55,20 +54,20 @@ Public Class VbRevServer
                             _NetClient.Send(GetServerInfo())
                         Case NetworkMessage.MessageType.EnumDirectoryRequest
                             Dim Path As String = DirectCast(Message, SingleParamMessage(Of String)).Parameter
-                            Dim Files As List(Of FileSystemItem) = FileSystemServer.EnumDirectory(Path)
+                            Dim Files As List(Of FileSystemItem) = FileSystemHelper.EnumDirectory(Path)
                             _NetClient.Send(New EnumDirectoryResponseMessage(Files))
                         Case NetworkMessage.MessageType.RenameFileRequest
                             Dim Request As RenameFileRequestMessage = DirectCast(Message, RenameFileRequestMessage)
                             If Request.IsDirectory Then
-                                FileSystemServer.RenameDirectory(Request.Path, Request.NewName)
+                                FileSystemHelper.RenameDirectory(Request.Path, Request.NewName)
                             Else
-                                FileSystemServer.RenameFile(Request.Path, Request.NewName)
+                                FileSystemHelper.RenameFile(Request.Path, Request.NewName)
                             End If
                             SendSuccessResponse()
                         Case NetworkMessage.MessageType.DeleteFilesRequest
                             Dim Response As New DeleteFilesResponseMessage
                             Dim FailedText As String = String.Empty
-                            Response.DeletedItemNames = FileSystemServer.DeleteFiles(DirectCast(Message, DeleteFilesRequestMessage).Files, FailedText)
+                            Response.DeletedItemNames = FileSystemHelper.DeleteFiles(DirectCast(Message, DeleteFilesRequestMessage).Files, FailedText)
                             Response.DeletedItemsFailed = FailedText
                             _NetClient.Send(Response)
                         Case NetworkMessage.MessageType.DownloadFileRequest
@@ -77,11 +76,11 @@ Public Class VbRevServer
                             FileTransfer(Message, True)
                         Case NetworkMessage.MessageType.StartProcessRequest
                             Dim Request As StartProcessRequestMessage = DirectCast(Message, StartProcessRequestMessage)
-                            ProcessServer.StartProcess(Request.ProcessArgs)
+                            ProcessHelper.StartProcess(Request.ProcessArgs)
                             SendSuccessResponse()
                         Case NetworkMessage.MessageType.StopProcessRequest
                             Dim Request As SingleParamMessage(Of Integer) = DirectCast(Message, SingleParamMessage(Of Integer))
-                            ProcessServer.EndProcess(Request.Parameter)
+                            ProcessHelper.EndProcess(Request.Parameter)
                             SendSuccessResponse()
                         Case NetworkMessage.MessageType.StartCmdLineRequest
                             Dim Request As StartProcessRequestMessage = DirectCast(Message, StartProcessRequestMessage)
@@ -93,14 +92,18 @@ Public Class VbRevServer
                                 _NetClient.Send(New SingleParamMessage(Of String)(NetworkMessage.MessageType.ErrorDetail, "Error establishing additional TCP connection for command line: " & ex.Message))
                             End Try
                         Case NetworkMessage.MessageType.EnumProcessesRequest
-                            _NetClient.Send(New EnumProcessesResponseMessage(ProcessServer.GetProcesses))
+                            _NetClient.Send(New EnumProcessesResponseMessage(ProcessHelper.GetProcesses))
                         Case NetworkMessage.MessageType.CreateDirectoryRequest
-                            FileSystemServer.CreateDirectory(DirectCast(Message, SingleParamMessage(Of String)).Parameter)
+                            FileSystemHelper.CreateDirectory(DirectCast(Message, SingleParamMessage(Of String)).Parameter)
                             SendSuccessResponse()
                         Case NetworkMessage.MessageType.EnumNetworkInterfacesRequest
-                            _NetClient.Send(New EnumNetworkInterfacesResponseMessage(NetworkingServer.GetNICs))
+                            _NetClient.Send(New EnumNetworkInterfacesResponseMessage(NetworkingHelper.GetNICs))
                         Case NetworkMessage.MessageType.EnumTcpListenersRequest
-                            _NetClient.Send(New EnumTcpListenersResponseMessage(NetworkingServer.GetTcpListeners))
+                            _NetClient.Send(New EnumTcpListenersResponseMessage(NetworkingHelper.GetTcpListeners))
+                        Case NetworkMessage.MessageType.OsInfoRequest
+                            _NetClient.Send(OsHelper.GetOsInfo)
+                        Case NetworkMessage.MessageType.EnumServicesRequest
+                            _NetClient.Send(New EnumServicesResponseMessage(ServiceHelper.GetServices(DirectCast(Message, SingleParamMessage(Of Boolean)).Parameter)))
                         Case Else
                             _NetClient.Send(New EmptyMessage(NetworkMessage.MessageType.UnrecognisedMessageType))
                     End Select
@@ -124,14 +127,14 @@ Public Class VbRevServer
         _NetClient.Send(New EmptyMessage(NetworkMessage.MessageType.Success))
     End Sub
 
-    Private Sub FileTransfer(Message As NetworkMessage, ClientSendingFile As Boolean)
+    Private Sub FileTransfer(Message As NetworkMessage, Receiving As Boolean)
         Dim Request As SingleParamMessage(Of String) = DirectCast(Message, SingleParamMessage(Of String))
         Try
             Log.WriteEntry("Initiating file transfer connection to " & _RemoteMachine & " on port " & _Port, False)
             Dim TransferSession As New NetworkSession(New TcpClient(_RemoteMachine, _Port), False, TimeSpan.Zero) With {.RaiseClosedEvent = False}
-            Dim TransferHandler As New FileTransferItem(Request.Parameter, Not ClientSendingFile)
-            If ClientSendingFile Then
-                TransferHandler.ReceiveFile(TransferSession, False)
+            Dim TransferHandler As New FileTransferItem(Request.Parameter, Not Receiving)
+            If Receiving Then
+                TransferHandler.ReceiveFile(TransferSession, True)
             Else
                 TransferHandler.SendFile(TransferSession)
             End If
@@ -157,41 +160,21 @@ Public Class VbRevServer
         Try
             Info.Username = System.Security.Principal.WindowsIdentity.GetCurrent(Security.Principal.TokenAccessLevels.Query).Name
         Catch ex As Exception
-            Info.Username = CStr(IIf(String.IsNullOrWhiteSpace(Environment.UserDomainName), Environment.UserName, Environment.UserDomainName & "\" & Environment.UserName))
+            Info.Username = If(String.IsNullOrWhiteSpace(Environment.UserDomainName), Environment.UserName, Environment.UserDomainName & "\" & Environment.UserName)
         End Try
-        Info.Is64Bit = Environment.Is64BitOperatingSystem
+        Try
+            Using Proc As Process = Process.GetCurrentProcess
+                Info.SessionId = Proc.SessionId
+            End Using
+        Catch ex As Exception
+            Log.WriteEntry("Failed to get session ID from current process: " & ex.Message, False)
+        End Try
         Info.CurrentDirectory = Environment.CurrentDirectory
-        Try
-            Info.MachineDomainName = OsServer.GetComputerDomainName
-        Catch ex As Exception
-            Info.MachineDomainName = "Error: " & ex.Message
-        End Try
-        Try
-            Dim OsInfo = GetOsInfo()
-            Info.OsName = OsInfo.Item1
-            Info.OsVersion = OsInfo.Item2
-        Catch ex As Exception
-            Info.OsName = "Error: " & ex.Message
-        End Try
         Return Info
     End Function
 
-    Private Function GetOsInfo() As Tuple(Of String, String)
-        Dim Name As String = String.Empty
-        Dim VersionNumber As String = String.Empty
-        Using HKLM = Microsoft.Win32.RegistryKey.OpenBaseKey(Microsoft.Win32.RegistryHive.LocalMachine, Microsoft.Win32.RegistryView.Default)
-            Using SubKey = HKLM.OpenSubKey("Software\Microsoft\Windows NT\CurrentVersion")
-                Name = CStr(SubKey.GetValue("ProductName", String.Empty))
-                Dim ReleaseId As String = CStr(SubKey.GetValue("ReleaseId", String.Empty))
-                If ReleaseId = String.Empty Then
-                    VersionNumber = CStr(SubKey.GetValue("CurrentVersion", String.Empty))
-                Else
-                    VersionNumber = ReleaseId
-                End If
-                Return New Tuple(Of String, String)(Name, VersionNumber)
-            End Using
-        End Using
 
-    End Function
+
+
 
 End Class

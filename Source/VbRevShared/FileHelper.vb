@@ -1,4 +1,6 @@
-﻿Public Class FileSystemHelper
+﻿Imports System.Text
+
+Public Class FileHelper
 
     Public Shared Function GetFileSizeString(ByVal SizeInBytes As Int64) As String
         Try
@@ -38,6 +40,17 @@
             Log.WriteEntry("Error getting file size string for " & SizeInBytes & " : " & ex.Message, True)
             Return SizeInBytes & " B"
         End Try
+    End Function
+
+
+    Public Shared Function GetResourceString(ByVal ResourcePath As String) As String
+        Dim SB As New StringBuilder(1024)
+        Dim Result As Integer = WinApi.SHLoadIndirectString(ResourcePath, SB, SB.Capacity, Nothing)
+        If Result = 0 Then
+            Return SB.ToString
+        Else
+            Throw New ComponentModel.Win32Exception(Result)
+        End If
     End Function
 
 End Class

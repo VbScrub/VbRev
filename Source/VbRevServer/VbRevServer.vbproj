@@ -93,7 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CmdLineServer.vb" />
-    <Compile Include="FileSystemServer.vb" />
+    <Compile Include="FileSystemHelper.vb" />
     <Compile Include="MainModule.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
@@ -110,11 +110,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="NetworkingServer.vb" />
-    <Compile Include="OsServer.vb" />
+    <Compile Include="NetworkingHelper.vb" />
+    <Compile Include="OsHelper.vb" />
     <Compile Include="ProcessMemoryReader.vb" />
-    <Compile Include="ProcessServer.vb" />
-    <Compile Include="ServiceServer.vb" />
+    <Compile Include="ProcessHelper.vb" />
+    <Compile Include="RegistryHelper.vb" />
+    <Compile Include="ServiceHelper.vb" />
     <Compile Include="VbRevServer.vb" />
   </ItemGroup>
   <ItemGroup>
@@ -144,6 +145,17 @@
       <Project>{143E457C-C577-421C-884A-6B2580688958}</Project>
       <Name>VbRevShared</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="TaskScheduler">
+      <Guid>{E34CB9F1-C7F7-424C-BE29-027DCC09363A}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

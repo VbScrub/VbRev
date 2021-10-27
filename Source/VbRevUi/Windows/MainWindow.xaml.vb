@@ -18,6 +18,7 @@ Public Class MainWindow
     Private _Listener As TcpListener
     Private _Port As Integer
     Private _RemoteMachineName As String = String.Empty
+    Private _SessionId As Integer = -1
     Private _RunningAsUser As String = String.Empty
     Private _StoppingListener As Boolean
 
@@ -45,19 +46,34 @@ Public Class MainWindow
         End Try
     End Sub
 
-
+    Public Shared Function GetFqdnFromNetbiosDomainName(ByVal NetbiosDomain As String) As String
+        Dim DcInfoPtr As IntPtr
+        Dim DcInfo As New WinApi.DomainControllerInfo
+        Dim Flags As WinApi.DsGetDcNameFlags = WinApi.DsGetDcNameFlags.DS_DIRECTORY_SERVICE_PREFERRED Or WinApi.DsGetDcNameFlags.DS_IS_FLAT_NAME Or WinApi.DsGetDcNameFlags.DS_RETURN_DNS_NAME
+        Try
+            Dim Result As UInteger = WinApi.DsGetDcName(Nothing, NetbiosDomain, Nothing, Nothing, Flags, DcInfoPtr)
+            If Result = 0 Then
+                Runtime.InteropServices.Marshal.PtrToStructure(DcInfoPtr, DcInfo)
+                Return DcInfo.DomainName
+            End If
+            Throw New System.ComponentModel.Win32Exception(CInt(Result))
+        Finally
+            If Not DcInfoPtr = IntPtr.Zero Then
+                WinApi.NetApiBufferFree(DcInfoPtr)
+            End If
+        End Try
+    End Function
    
    
 
     Private Sub Window_Loaded(sender As System.Object, e As System.Windows.RoutedEventArgs) Handles MyBase.Loaded
-       
         MainGrid.Visibility = Windows.Visibility.Collapsed
         InitialGrid.Visibility = Windows.Visibility.Visible
         'Remove above before release
         '==================================
         Try
             System.Threading.Thread.CurrentThread.Name = "UI_THREAD"
-            HookupPageEventHandlers(New List(Of TabPage) From {FileMainPage, ProcessMainPage, CmdMainPage, NetworkingMainPage})
+            HookupPageEventHandlers(New List(Of TabPage) From {FileMainPage, ProcessMainPage, CmdMainPage, NetworkingMainPage, ServicesMainPage})
             Me.TaskbarItemInfo.ProgressValue = 1
             VersionLbl.Text = "V" & My.Application.Info.Version.Major & "." & My.Application.Info.Version.Minor & "." & My.Application.Info.Version.Build
             Try
@@ -88,13 +104,7 @@ Public Class MainWindow
             AddHandler CurrentPage.SendingServerRequest, AddressOf UiSendingServerRequest
             AddHandler CurrentPage.SendingServerRequestFinished, AddressOf UiSendingServerRequestFinished
         Next
-        'AddHandler FileMainPage.SendingServerRequest, AddressOf UiSendingServerRequest
-        'AddHandler FileMainPage.SendingServerRequestFinished, AddressOf UiSendingServerRequestFinished
         AddHandler FileMainPage.OpenCmd, AddressOf FileMainPage_OpenCmd
-        'AddHandler CmdMainPage.SendingServerRequest, AddressOf UiSendingServerRequest
-        'AddHandler CmdMainPage.SendingServerRequestFinished, AddressOf UiSendingServerRequestFinished
-        'AddHandler ProcessMainPage.SendingServerRequest, AddressOf UiSendingServerRequest
-        'AddHandler ProcessMainPage.SendingServerRequestFinished, AddressOf UiSendingServerRequestFinished
     End Sub
 
     Private Sub OptionsMenuItem_Click(sender As System.Object, e As System.Windows.RoutedEventArgs)
@@ -144,10 +154,11 @@ Public Class MainWindow
                 _VbClient = New VbRevClient(New NetworkSession(_Listener.EndAcceptTcpClient(Result), True, TimeSpan.FromSeconds(UserSettings.NetworkReadTimeoutSeconds)))
                 AddHandler _VbClient.NetClient.Closed, AddressOf VbClient_Closed
                 FileMainPage.Client = New FileSystemClient(_VbClient.NetClient, _Port)
-                CmdMainPage.NetClient = _VbClient.NetClient
-                CmdMainPage.Port = _Port
                 ProcessMainPage.Client = New ProcessClient(_VbClient.NetClient)
                 NetworkingMainPage.Client = New NetworkingClient(_VbClient.NetClient)
+                ServicesMainPage.Client = New ServiceClient(_VbClient.NetClient)
+                CmdMainPage.Client = _VbClient.NetClient
+                CmdMainPage.Port = _Port
                 Log.WriteEntry("Client = " & _VbClient.NetClient.RemoteIp, False)
                 UpdateUiStatus("Received connection from " & _VbClient.NetClient.RemoteIp, False, Shell.TaskbarItemProgressState.Indeterminate)
                 UpdateListenerLabel("Received connection from " & _VbClient.NetClient.RemoteIp & Environment.NewLine &
@@ -156,6 +167,7 @@ Public Class MainWindow
                 _ServerInfo = _VbClient.GetInitialInfo
                 _RunningAsUser = _ServerInfo.Username
                 _RemoteMachineName = _ServerInfo.MachineName
+                _SessionId = _ServerInfo.SessionId
                 FileMainPage.MachineName = _RemoteMachineName
                 Dim CurrentFilesDirectory As String = _ServerInfo.CurrentDirectory
                 If String.IsNullOrWhiteSpace(CurrentFilesDirectory) Then
@@ -192,14 +204,15 @@ Public Class MainWindow
     Private Sub ClientConnectionFinished(CurrentDirectory As String)
         If Me.Dispatcher.CheckAccess Then
             If Me.IsLoaded Then
-                Dim IpAndMachine As String = _VbClient.NetClient.RemoteIp & CStr(IIf(_RemoteMachineName = String.Empty, String.Empty, " (" & _RemoteMachineName & ")"))
+                Dim IpAndMachine As String = _VbClient.NetClient.RemoteIp & If(_RemoteMachineName = String.Empty, String.Empty, " (" & _RemoteMachineName & ")")
                 Me.Title = "VbRev - " & IpAndMachine
-                Me.Width = 750
+                Me.Width = 790
                 Me.Height = 650
                 InitialGrid.Visibility = Windows.Visibility.Collapsed
                 MainGrid.Visibility = Windows.Visibility.Visible
+                RenameWindowMenuItem.Visibility = Visibility.Visible
                 ConnectedToLbl.Text = IpAndMachine
-                RunningAsLbl.Text = _RunningAsUser
+                RunningAsLbl.Text = _RunningAsUser & "  (Session ID: " & _SessionId.ToString & ")"
                 FileMainPage.InitialLoad(CurrentDirectory)
             End If
         Else
@@ -295,7 +308,7 @@ Public Class MainWindow
     End Sub
 
     Private Sub UsageMenuItem_Click(sender As System.Object, e As System.Windows.RoutedEventArgs)
-        NotInBeta()
+        AppHelper.NotInBeta()
     End Sub
 
     Private Sub TaskbarTimer_Tick(sender As Object, e As EventArgs)
@@ -329,22 +342,13 @@ Public Class MainWindow
 
     Private Sub MachineInfoLink_Click(sender As System.Object, e As System.Windows.RoutedEventArgs)
         Dim InfoWnd As New MachineInfoWindow
-        InfoWnd.ServerInfo = _ServerInfo
+        InfoWnd.MachineName = _ServerInfo.MachineName
+        InfoWnd.Client = _VbClient
         InfoWnd.ShowDialog()
     End Sub
 
     Private Sub DisconnectBtn_Click(sender As System.Object, e As System.Windows.RoutedEventArgs)
-        'MainGrid.Visibility = Windows.Visibility.Collapsed
-        'ResetInitialPanel()
-        'InitialGrid.Visibility = Windows.Visibility.Visible
-        'StatusLbl.Text = "Ready"
-        'Me.Title = "VbRev"
         Me.Close()
-    End Sub
-
-    Private Sub NotInBeta()
-        MessageBox.Show("This feature has not been implemented yet." & Environment.NewLine &
-                        "Check http://vbscrub.com for updates on the latest version of this application", "Feature Not Ready", MessageBoxButton.OK, MessageBoxImage.Information)
     End Sub
 
     Private Sub WebsiteMenuItem_Click(sender As System.Object, e As System.Windows.RoutedEventArgs)
@@ -397,19 +401,11 @@ Public Class MainWindow
         End Try
     End Sub
 
-    Private Sub PTLink_Click(sender As System.Object, e As System.Windows.RoutedEventArgs)
-        Try
-            Process.Start("https://vbscrub.com/tools/porttunnel-pt-exe/")
-        Catch ex As Exception
-            MessageBox.Show("Error launching URL handler. Please manually browse to http://vbscrub.com", "Error", MessageBoxButton.OK, MessageBoxImage.Warning)
-        End Try
-    End Sub
-
-    Private Sub UserInfoLink_Click(sender As System.Object, e As System.Windows.RoutedEventArgs)
-
-    End Sub
-
-    Private Sub FileMainPage_Loaded(sender As Object)
-
+    Private Sub RenameWindowMenuItem_Click(sender As Object, e As RoutedEventArgs)
+        Dim RenameWnd As New RenameWindow
+        RenameWnd.WindowTitle = Me.Title
+        If RenameWnd.ShowDialog Then
+            Me.Title = RenameWnd.WindowTitle
+        End If
     End Sub
 End Class

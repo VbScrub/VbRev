@@ -12,7 +12,6 @@ Public Class ProcessMemoryReader : Implements IDisposable
         Me.Open()
     End Sub
 
-
     Public Function Read(ByVal MemoryAddress As IntPtr, ByVal Count As Integer) As Byte()
         If _TargetProcessHandle = IntPtr.Zero Then
             Open()
@@ -41,9 +40,6 @@ Public Class ProcessMemoryReader : Implements IDisposable
         End If
     End Sub
 
-    ''' <summary>
-    ''' Closes a handle that was previously obtained by the constructor or a call to the Open method
-    ''' </summary>
     Public Sub Close()
         If Not _TargetProcessHandle = IntPtr.Zero Then
             Dim Result As Boolean = WinApi.CloseHandle(_TargetProcessHandle)
@@ -54,7 +50,6 @@ Public Class ProcessMemoryReader : Implements IDisposable
             _TargetProcessHandle = IntPtr.Zero
         End If
     End Sub
-
 
 
 

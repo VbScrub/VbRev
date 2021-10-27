@@ -7,10 +7,87 @@ Public Class WinApi
 #Region "Constants"
 
     Public Const ErrorInsufficientBuffer As UInteger = 122
+    Public Const GENERIC_READ As UInteger = &H80000000UI
+    Public Const GENERIC_ALL As UInteger = &H10000000
+    Public Const GENERIC_WRITE As UInteger = &H40000000
+    Public Const GENERIC_EXECUTE As UInteger = &H20000000
+    Public Const READ_CONTROL As UInteger = &H20000
+    Public Const SC_ENUM_PROCESS_INFO As UInteger = 0
+    Public Const SERVICE_WIN32 As UInteger = &H30
+    Public Const SERVICE_STATE_ALL As UInteger = 3
+
 
 #End Region
 
 #Region "Enums"
+
+    <Flags()> _
+    Public Enum ServiceManagerRights As UInteger
+        SC_MANAGER_CONNECT = 1
+        SC_MANAGER_CREATE_SERVICE = 2
+        SC_MANAGER_ENUMERATE_SERVICE = 4
+        SC_MANAGER_LOCK = 8
+        SC_MANAGER_MODIFY_BOOT_CONFIG = &H20
+        SC_MANAGER_QUERY_LOCK_STATUS = &H10
+        SC_MANAGER_ALL_ACCESS = &HF003F
+        GENERIC_READ = WinApi.GENERIC_READ
+        GENERIC_WRITE = WinApi.GENERIC_WRITE
+        GENERIC_EXECUTE = WinApi.GENERIC_EXECUTE
+        GENERIC_ALL = WinApi.GENERIC_ALL
+        READ_CONTROL = WinApi.READ_CONTROL
+        STANDARD_RIGHTS_REQUIRED = &HF0000
+        DELETE = &H10000
+        WRITE_DAC = &H40000
+        WRITE_OWNER = &H80000
+        SYNCHRONIZE = &H100000
+    End Enum
+
+    <Flags()> _
+    Public Enum ServiceRights As UInteger
+        SERVICE_QUERY_CONFIG = 1
+        SERVICE_CHANGE_CONFIG = 2
+        SERVICE_QUERY_STATUS = 4
+        SERVICE_ENUMERATE_DEPENDENTS = 8
+        SERVICE_START = &H10
+        SERVICE_STOP = &H20
+        SERVICE_INTERROGATE = &H80
+        SERVICE_USER_DEFINED_CONTROL = &H100
+        SERVICE_PAUSE_CONTINUE = &H40
+        SERVICE_ALL_ACCESS = &HF01FF
+        GENERIC_READ = WinApi.GENERIC_READ
+        GENERIC_WRITE = WinApi.GENERIC_WRITE
+        GENERIC_EXECUTE = WinApi.GENERIC_EXECUTE
+        GENERIC_ALL = WinApi.GENERIC_ALL
+        READ_CONTROL = WinApi.READ_CONTROL
+        ACCESS_SYSTEM_SECURITY = &H1000000
+        DELETE = &H10000
+        WRITE_DAC = &H40000
+        WRITE_OWNER = &H80000
+        SYNCHRONIZE = &H100000
+    End Enum
+
+    Public Enum DsGetDcNameFlags As Integer
+        DS_FORCE_REDISCOVERY = &H1
+        DS_DIRECTORY_SERVICE_REQUIRED = &H10
+        DS_DIRECTORY_SERVICE_PREFERRED = &H20
+        DS_GC_SERVER_REQUIRED = &H40
+        DS_PDC_REQUIRED = &H80
+        DS_BACKGROUND_ONLY = &H100
+        DS_IP_REQUIRED = &H200
+        DS_KDC_REQUIRED = &H400
+        DS_TIMESERV_REQUIRED = &H800
+        DS_WRITABLE_REQUIRED = &H1000
+        DS_GOOD_TIMESERV_PREFERRED = &H2000
+        DS_AVOID_SELF = &H4000
+        DS_ONLY_LDAP_NEEDED = &H8000
+        DS_IS_FLAT_NAME = &H10000
+        DS_IS_DNS_NAME = &H20000
+        DS_TRY_NEXTCLOSEST_SITE = &H40000
+        DS_DIRECTORY_SERVICE_6_REQUIRED = &H80000
+        DS_WEB_SERVICE_REQUIRED = &H100000
+        DS_RETURN_DNS_NAME = &H40000000
+        DS_RETURN_FLAT_NAME = &H80000000
+    End Enum
 
     Public Enum TCP_TABLE_CLASS
         TcpTableBasicListener = 0
@@ -90,7 +167,65 @@ Public Class WinApi
 
 #End Region
 
-#Region "Structs"
+#Region "Structs & Classes"
+
+    <StructLayout(LayoutKind.Sequential)> _
+    Public Class QUERY_SERVICE_CONFIG
+        Public dwServiceType As UInteger
+        Public dwStartType As UInteger
+        Public dwErrorControl As UInteger
+        <MarshalAs(UnmanagedType.LPWStr)> _
+        Public lpBinaryPathName As String
+        <MarshalAs(UnmanagedType.LPWStr)> _
+        Public lpLoadOrderGroup As String
+        Public dwTagId As UInteger
+        Public lpDependencies As IntPtr
+        <MarshalAs(UnmanagedType.LPWStr)> _
+        Public lpServiceStartName As String
+        <MarshalAs(UnmanagedType.LPWStr)> _
+        Public lpDisplayName As String
+    End Class
+
+    <StructLayout(LayoutKind.Sequential)> _
+    Public Structure ENUM_SERVICE_STATUS_PROCESS
+        <MarshalAs(UnmanagedType.LPTStr)> _
+        Public lpServiceName As String
+        <MarshalAs(UnmanagedType.LPTStr)> _
+        Public lpDisplayName As String
+        Public ServiceStatusProcess As SERVICE_STATUS_PROCESS
+    End Structure
+
+    <StructLayout(LayoutKind.Sequential)> _
+    Public Structure SERVICE_STATUS_PROCESS
+        Public dwServiceType As UInteger
+        Public dwCurrentState As SERVICE_STATES
+        Public dwControlsAccepted As UInteger
+        Public dwWin32ExitCode As UInteger
+        Public dwServiceSpecificExitCode As UInteger
+        Public dwCheckPoint As UInteger
+        Public dwWaitHint As UInteger
+        Public dwProcessId As UInteger
+        Public dwServiceFlags As UInteger
+    End Structure
+
+    <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Unicode)> _
+    Public Structure DomainControllerInfo
+        <MarshalAs(UnmanagedType.LPWStr)>
+        Public DomainControllerName As String
+        <MarshalAs(UnmanagedType.LPWStr)>
+        Public DomainControllerAddress As String
+        Public DomainControllerAddressType As Integer
+        Public DomainGuid As Guid
+        <MarshalAs(UnmanagedType.LPWStr)>
+        Public DomainName As String
+        <MarshalAs(UnmanagedType.LPWStr)>
+        Public DnsForestName As String
+        Public Flags As Integer
+        <MarshalAs(UnmanagedType.LPWStr)>
+        Public DcSiteName As String
+        <MarshalAs(UnmanagedType.LPWStr)>
+        Public ClientSiteName As String
+    End Structure
 
     <StructLayout(LayoutKind.Sequential)>
     Public Structure UNICODE_STRING
@@ -202,6 +337,46 @@ Public Class WinApi
 
 #Region "API Definitions"
 
+    <DllImport("advapi32.dll", EntryPoint:="QueryServiceStatusEx", SetLastError:=True)> _
+    Public Shared Function QueryServiceStatusEx(<InAttribute()> ByVal hService As IntPtr, ByVal InfoLevel As UInteger,
+                                                ByVal lpBuffer As IntPtr, ByVal cbBufSize As UInteger,
+                                                <Out()> ByRef pcbBytesNeeded As UInteger) As <MarshalAs(UnmanagedType.Bool)> Boolean
+    End Function
+
+    <DllImport("advapi32.dll", EntryPoint:="ControlService", SetLastError:=True)> _
+    Public Shared Function ControlService(ByVal hService As IntPtr, ByVal dwControl As SERVICE_CONTROL_CODES, ByRef lpServiceStatus As SERVICE_STATUS_PROCESS) As Boolean
+    End Function
+
+    <DllImport("advapi32.dll", EntryPoint:="QueryServiceConfigW", SetLastError:=True)>
+    Public Shared Function QueryServiceConfig(<InAttribute()> ByVal hService As IntPtr, <Out()> ByVal lpServiceConfig As IntPtr,
+                                              ByVal cbBufSize As UInteger, <Out()> ByRef pcbBytesNeeded As UInteger) As <MarshalAs(UnmanagedType.Bool)> Boolean
+    End Function
+
+    <DllImport("shlwapi.dll", CharSet:=CharSet.Unicode)>
+    Public Shared Function SHLoadIndirectString(<InAttribute()> ByVal pszSource As String, <MarshalAs(UnmanagedType.LPWStr), Out()> ByVal pszOutBuf As Text.StringBuilder,
+                                                ByVal cchOutBuf As Integer, ByVal ppvReserved As IntPtr) As Integer
+    End Function
+       
+
+    '<DllImport("kernel32.dll", EntryPoint:="FreeLibrary", SetLastError:=True)> _
+    'Public Shared Function FreeLibrary(<InAttribute()> ByVal hLibModule As IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean
+    'End Function
+
+    '<DllImport("kernel32.dll", EntryPoint:="LoadLibraryW", SetLastError:=True)> _
+    'Public Shared Function LoadLibrary(<InAttribute(), MarshalAs(UnmanagedType.LPWStr)> ByVal lpLibFileName As String) As IntPtr
+    'End Function
+
+    '<DllImport("user32.dll", EntryPoint:="LoadStringW", SetLastError:=True)> _
+    'Public Shared Function LoadString(<InAttribute()> ByVal hInstance As IntPtr, ByVal uID As UInteger, <Out(), MarshalAs(UnmanagedType.LPWStr)> ByVal lpBuffer As Text.StringBuilder,
+    '                                  ByVal cchBufferMax As Integer) As Integer
+    'End Function
+
+    <DllImport("Netapi32.dll", EntryPoint:="DsGetDcNameW", SetLastError:=True)> _
+    Public Shared Function DsGetDcName(<MarshalAs(UnmanagedType.LPWStr), InAttribute()> ByVal computerName As String, <MarshalAs(UnmanagedType.LPTStr), InAttribute()> ByVal domainName As String,
+                                       <InAttribute()> ByVal domainGuid As IntPtr, <MarshalAs(UnmanagedType.LPTStr), InAttribute()> ByVal siteName As String, <InAttribute()> ByVal flags As Integer,
+                                       <Out()> ByRef domainControllerInfo As IntPtr) As UInteger
+    End Function
+
     <DllImport("ntdll.dll", EntryPoint:="RtlNtStatusToDosError", SetLastError:=True)> _
     Public Shared Function RtlNtStatusToDosError(NtStatus As Integer) As Integer
     End Function
@@ -301,6 +476,6 @@ Public Class WinApi
     End Function
 
 #End Region
-   
+
 
 End Class

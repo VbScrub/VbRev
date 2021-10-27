@@ -2,7 +2,7 @@
 Imports System.Net.Sockets
 Imports System.Runtime.InteropServices
 
-Public Class NetworkingServer
+Public Class NetworkingHelper
 
     Public Shared Function GetNICs() As List(Of NetworkInterfaceItem)
         Dim NicList As New List(Of NetworkInterfaceItem)

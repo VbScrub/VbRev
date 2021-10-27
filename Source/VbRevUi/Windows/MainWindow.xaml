@@ -9,7 +9,6 @@
         <TaskbarItemInfo />
     </Window.TaskbarItemInfo>
     <Window.Resources>
-        <local:FileTypeToIconConverter x:Key="FileTypeToIconConverterResource" />
         <Style TargetType="{x:Type TextBlock}">
             <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
         </Style>
@@ -44,6 +43,7 @@
                     <TextBlock Text="Tools"  Foreground="#FFE2E2E2" />
                 </MenuItem.Header>
                 <MenuItem Header="View Downloads" x:Name="OpenDownloadsMenuItem" Click="OpenDownloadsMenuItem_Click" />
+                <MenuItem Header="Rename Window" x:Name="RenameWindowMenuItem" Click="RenameWindowMenuItem_Click" Visibility="Collapsed" />
                 <MenuItem Header="Options" x:Name="OptionsMenuItem" Click="OptionsMenuItem_Click" />
             </MenuItem>
             <MenuItem>
@@ -127,11 +127,11 @@
                         <TabItem.Header>
                             <TextBlock Text="Services" />
                         </TabItem.Header>
-                        <local:ServicesPage />
+                        <local:ServicesPage x:Name="ServicesMainPage" />
                     </TabItem>
-                    <TabItem x:Name="LdapTab">
+                    <TabItem x:Name="ScheduledTasksTab">
                         <TabItem.Header>
-                            <TextBlock Text="LDAP" />
+                            <TextBlock Text="Scheduled Tasks" />
                         </TabItem.Header>
                         <TextBlock Margin="10">
                             Coming soon. Check <Hyperlink Click="ComingSoonLinks_Click">vbscrub.com</Hyperlink> for updates

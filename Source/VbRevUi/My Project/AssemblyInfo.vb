@@ -12,10 +12,10 @@ Imports System.Windows
 ' Review the values of the assembly attributes
 
 <Assembly: AssemblyTitle("VbRev GUI")> 
-<Assembly: AssemblyDescription("")> 
+<Assembly: AssemblyDescription("VB is better than C#. Change my mind.")> 
 <Assembly: AssemblyCompany("")> 
-<Assembly: AssemblyProduct("VbRev GUI")> 
-<Assembly: AssemblyCopyright("Copyright VbScrub  2020")> 
+<Assembly: AssemblyProduct("VbRev GUI")>
+<Assembly: AssemblyCopyright("Copyright VbScrub  2021")>
 <Assembly: AssemblyTrademark("")> 
 <Assembly: ComVisible(false)>
 
@@ -42,7 +42,7 @@ Imports System.Windows
 
 
 'The following GUID is for the ID of the typelib if this project is exposed to COM
-<Assembly: Guid("6a999573-8dc7-432b-acc8-cf8f52d561b0")> 
+<Assembly: Guid("6a999573-8dc7-432b-acc8-cf8f52d561b0")>
 
 ' Version information for an assembly consists of the following four values:
 '
@@ -55,5 +55,5 @@ Imports System.Windows
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("0.3.2.0")> 
-<Assembly: AssemblyFileVersion("0.3.2.0")> 
+<Assembly: AssemblyVersion("0.3.3.0")>
+<Assembly: AssemblyFileVersion("0.3.3.0")>

@@ -98,7 +98,9 @@
                 <TabItem.Header>
                     <TextBlock Text="Port Forwarding" />
                 </TabItem.Header>
-
+                <TextBlock Margin="8">
+                            Coming soon. For now you can use my standalone <Hyperlink Click="PortTunnelLink_Click">PortTunnel</Hyperlink> program
+                </TextBlock>
             </TabItem>
         </TabControl>
     </Grid>

@@ -104,4 +104,15 @@
         End Try
     End Sub
 
+    Private Sub PortTunnelLink_Click(sender As System.Object, e As System.Windows.RoutedEventArgs)
+        Try
+            Process.Start("https://vbscrub.com/tools/porttunnel-pt-exe/")
+        Catch ex As Exception
+            MessageBox.Show("Error launching URL handler. Please manually browse to https://vbscrub.com/tools/porttunnel-pt-exe", "Error", MessageBoxButton.OK, MessageBoxImage.Warning)
+        End Try
+    End Sub
+
+    Private Sub TabPage_Loaded(sender As System.Object, e As System.Windows.RoutedEventArgs) Handles MyBase.Loaded
+
+    End Sub
 End Class

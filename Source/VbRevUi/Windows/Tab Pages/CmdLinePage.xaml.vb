@@ -3,7 +3,7 @@
 Public Class CmdLinePage : Inherits TabPage
 
 
-    Public Property NetClient As NetworkSession
+    Public Property Client As NetworkSession
     Public Property Port As Integer
 
     Private _Listener As Net.Sockets.TcpListener
@@ -44,7 +44,7 @@ Public Class CmdLinePage : Inherits TabPage
                 _Listener = New TcpListener(Net.IPAddress.Any, Me.Port)
             End If
             _Listener.Start()
-            NetClient.Send(New StartProcessRequestMessage(NetworkMessage.MessageType.StartCmdLineRequest, ProcArgs))
+            Client.Send(New StartProcessRequestMessage(NetworkMessage.MessageType.StartCmdLineRequest, ProcArgs))
             _Listener.BeginAcceptTcpClient(AddressOf Listener_ConnectionAccepted, ProcArgs)
             'Timeout in case server never connect back to us
             Dim TimedOut As Boolean = Not _ThreadSignal.WaitOne(TimeSpan.FromSeconds(UserSettings.NetworkReadTimeoutSeconds))

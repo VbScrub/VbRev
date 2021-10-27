@@ -90,17 +90,22 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Classes\AppHelper.vb" />
     <Compile Include="Classes\ClientBase.vb" />
     <Compile Include="Classes\CmdLineClient.vb" />
     <Compile Include="Classes\IconHelper.vb" />
     <Compile Include="Classes\NetworkingClient.vb" />
     <Compile Include="Classes\ProcessClient.vb" />
+    <Compile Include="Classes\ServiceClient.vb" />
     <Compile Include="Classes\UI\CmdLineTabVM.vb" />
     <Compile Include="Classes\UI\TabPage.vb" />
+    <Compile Include="Windows\RenameWindow.xaml.vb">
+      <DependentUpon>RenameWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\StartProcessWindow.xaml.vb">
       <DependentUpon>StartProcessWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Tabs\CmdTabItemHeader.xaml.vb">
+    <Compile Include="Windows\Tab Pages\CmdTabItemHeader.xaml.vb">
       <DependentUpon>CmdTabItemHeader.xaml</DependentUpon>
     </Compile>
     <Compile Include="Classes\UI\FileBreadcrumbItem.vb" />
@@ -112,13 +117,13 @@
     <Compile Include="Windows\AboutWindow.xaml.vb">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Tabs\CmdLinePage.xaml.vb">
+    <Compile Include="Windows\Tab Pages\CmdLinePage.xaml.vb">
       <DependentUpon>CmdLinePage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Tabs\CmdLineTabItem.xaml.vb">
+    <Compile Include="Windows\Tab Pages\CmdLineTabItem.xaml.vb">
       <DependentUpon>CmdLineTabItem.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Tabs\FileSystemPage.xaml.vb">
+    <Compile Include="Windows\Tab Pages\FileSystemPage.xaml.vb">
       <DependentUpon>FileSystemPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\MachineInfoWindow.xaml.vb">
@@ -134,26 +139,30 @@
     <Compile Include="Windows\OptionsWindow.xaml.vb">
       <DependentUpon>OptionsWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Tabs\NetworkingPage.xaml.vb">
+    <Compile Include="Windows\Tab Pages\NetworkingPage.xaml.vb">
       <DependentUpon>NetworkingPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Tabs\ProcessPage.xaml.vb">
+    <Compile Include="Windows\Tab Pages\ProcessPage.xaml.vb">
       <DependentUpon>ProcessPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Tabs\RegistryPage.xaml.vb">
+    <Compile Include="Windows\Tab Pages\RegistryPage.xaml.vb">
       <DependentUpon>RegistryPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Tabs\ServicesPage.xaml.vb">
+    <Compile Include="Windows\Tab Pages\ServicesPage.xaml.vb">
       <DependentUpon>ServicesPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\TransferFilesWindow.xaml.vb">
       <DependentUpon>TransferFilesWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="Windows\RenameWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\StartProcessWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\Tabs\CmdTabItemHeader.xaml">
+    <Page Include="Windows\Tab Pages\CmdTabItemHeader.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -161,15 +170,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\Tabs\CmdLinePage.xaml">
+    <Page Include="Windows\Tab Pages\CmdLinePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\Tabs\CmdLineTabItem.xaml">
+    <Page Include="Windows\Tab Pages\CmdLineTabItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\Tabs\FileSystemPage.xaml">
+    <Page Include="Windows\Tab Pages\FileSystemPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -185,19 +194,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\Tabs\NetworkingPage.xaml">
+    <Page Include="Windows\Tab Pages\NetworkingPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\Tabs\ProcessPage.xaml">
+    <Page Include="Windows\Tab Pages\ProcessPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\Tabs\RegistryPage.xaml">
+    <Page Include="Windows\Tab Pages\RegistryPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\Tabs\ServicesPage.xaml">
+    <Page Include="Windows\Tab Pages\ServicesPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -226,7 +235,6 @@
     <Import Include="VbRev.Shared" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Classes\UI\Converters\FileTypeToIconConverter.vb" />
     <Compile Include="My Project\AssemblyInfo.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -359,6 +367,9 @@
   </ItemGroup>
   <ItemGroup>
     <SplashScreen Include="Images\VbRevSplash.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\gear_16.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

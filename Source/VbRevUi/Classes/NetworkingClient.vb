@@ -1,5 +1,4 @@
-﻿'Sorry for the confusing name (this class has nothing to do with actual networking stuff going on in this program)
-Public Class NetworkingClient : Inherits ClientBase
+﻿Public Class NetworkingClient : Inherits ClientBase
 
     Public Sub New(Client As NetworkSession)
         Me.NetClient = Client

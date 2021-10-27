@@ -1,4 +1,4 @@
-﻿Public Class FileSystemServer
+﻿Public Class FileSystemHelper
 
     Public Const Drives As String = "[DRIVES]"
 
@@ -9,7 +9,7 @@
                 Try
                     Dim DriveItem As New FileSystemItem()
                     DriveItem.Type = FileSystemItem.FileItemType.Drive
-                    DriveItem.Name = Drive.Name & CStr(IIf(String.IsNullOrWhiteSpace(Drive.VolumeLabel), String.Empty, " (" & Drive.VolumeLabel & ")"))
+                    DriveItem.Name = Drive.Name & If(String.IsNullOrWhiteSpace(Drive.VolumeLabel), String.Empty, " (" & Drive.VolumeLabel & ")")
                     DriveItem.FullPath = Drive.Name
                     FileList.Add(DriveItem)
                 Catch ex As Exception

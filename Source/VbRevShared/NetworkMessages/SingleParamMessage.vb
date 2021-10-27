@@ -1,7 +1,4 @@
-﻿''' <summary>
-''' A network message that only has a single data object associated with it
-''' </summary>
-<Serializable()>
+﻿<Serializable()>
 Public Class SingleParamMessage(Of T) : Inherits NetworkMessage
 
     Public Property Parameter As T

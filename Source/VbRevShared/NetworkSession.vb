@@ -11,7 +11,7 @@ Public Class NetworkSession
         End Property
     End Class
 
-    Public Const ProtocolVersion As Integer = 3
+    Public Const ProtocolVersion As Integer = 5 'TODO: Increase this every time you change something that breaks compatibility between this version and old versions
     Public Const ReceiveBufferSize As Integer = 6144 '6 KB
 
     Public Event Closed()
@@ -72,7 +72,6 @@ Public Class NetworkSession
                 'Read from network
                 Log.WriteEntry("Reading from network stream", True)
                 Dim NewBytes() As Byte = Me.ReadFromNetworkStream()
-                Log.WriteEntry("Read " & NewBytes.Length, True)
                 'No previous message that we're waiting to complete
                 If _CurrentBuffer Is Nothing Then
                     Log.WriteEntry("No previous buffer", True)
@@ -87,12 +86,11 @@ Public Class NetworkSession
                     _CurrentBuffer = TempBuffer
                     Log.WriteEntry("New buffer length " & _CurrentBuffer.Length, True)
                 End If
-                Log.WriteEntry("Checking if we can construct message yet", True)
                 If Not CanConstructMessage(_CurrentBuffer, CurrentMessageLength) Then
-                    Log.WriteEntry("Can't construct message yet", True)
+                    Log.WriteEntry("Can't construct full message yet", True)
                     Continue Do
                 End If
-                Log.WriteEntry("We can construct message",True)
+                Log.WriteEntry("Can construct full message", True)
 
                 'Construct message from byte array
                 Dim Message As NetworkMessage = ConstructMessage(_CurrentBuffer, CurrentMessageLength)
@@ -100,7 +98,6 @@ Public Class NetworkSession
                 If _CurrentBuffer.Length > CurrentMessageLength Then
                     _CurrentBuffer = RemoveFromBufferStart(_CurrentBuffer, CurrentMessageLength)
                 Else
-                    'Log.WriteEntry("Clearing buffer")
                     _CurrentBuffer = Nothing
                 End If
                 Log.WriteEntry("Returning message", True)
@@ -132,7 +129,6 @@ Public Class NetworkSession
         MessageLength = BitConverter.ToInt32(Bytes, NetworkMessage.ProtocolId.Length)
         'If the total length of the message is longer than our current data, wait for more data
         If MessageLength > Bytes.Length Then
-            'Log.WriteEntry("We don't have enough bytes yet (we have " & Bytes.Length & ")", True)
             Return False
         Else
             Return True
@@ -148,9 +144,10 @@ Public Class NetworkSession
             Throw New ApplicationException("Invalid message type received from remote machine")
         End If
         Dim MsgType As NetworkMessage.MessageType = DirectCast(MsgTypeInt, NetworkMessage.MessageType)
-        'Get correct network message carrier class for message type so that we call class specific FromBytes override method (there must be a better way to do this)
+        'Get correct network message carrier class for message type so that we call correct FromBytes override
+        'Not super important right now as they all just user BinaryFormatter serialization, but will be important later when individual message formats are optimised
         Select Case NetworkMessage.MessageTypeToCarrier(MsgType)
-            Case NetworkMessage.MessageCarrierType.Empty
+            Case NetworkMessage.MessageCarrierType.Void
                 Message = New EmptyMessage()
             Case NetworkMessage.MessageCarrierType.ServerInfoResponse
                 Message = New ServerInfoResponseMessage
@@ -180,10 +177,14 @@ Public Class NetworkSession
                 Message = New EnumNetworkInterfacesResponseMessage
             Case NetworkMessage.MessageCarrierType.EnumTcpListenersResponse
                 Message = New EnumTcpListenersResponseMessage
+            Case NetworkMessage.MessageCarrierType.OsInfoResponse
+                Message = New OsInfoResponseMessage
+            Case NetworkMessage.MessageCarrierType.EnumServicesResponse
+                Message = New EnumServicesResponseMessage
             Case Else
                 Throw New ApplicationException("Unrecognised network message type " & MsgType.ToString)
         End Select
-        'Deserialize bytes to object with FromBytes method (overridable by individual classes)
+        'Deserialize bytes to object with FromBytes method
         Message = Message.FromBytes(Bytes)
         Message.Type = MsgType
         Message.BinaryLength = Length
@@ -205,36 +206,44 @@ Public Class NetworkSession
     Private Sub WriteToNetworkStream(Data() As Byte)
         Try
             If Not Client Is Nothing AndAlso Client.Connected AndAlso Not Stream Is Nothing Then
+                Log.WriteEntry("Writing " & Data.Length & " bytes to network stream", True)
                 Me.Stream.Write(Data, 0, Data.Length)
+                Log.WriteEntry("Successfully wrote to stream", True)
             End If
         Catch IoEx As IO.IOException
+            Log.WriteEntry("Error writing to network stream: " & IoEx.Message, False)
             If Not IoEx.InnerException Is Nothing AndAlso (IoEx.InnerException.GetType Is GetType(Net.Sockets.SocketException)) AndAlso
-            DirectCast(IoEx.InnerException, Net.Sockets.SocketException).NativeErrorCode = SocketError.ConnectionReset Then
+                                                 DirectCast(IoEx.InnerException, Net.Sockets.SocketException).NativeErrorCode = SocketError.ConnectionReset Then
                 Throw New ClientDisconnectedException
             End If
+
         Catch ex As Exception
             Throw New ApplicationException("Error sending network data: " & ex.Message)
         End Try
     End Sub
 
+
     Private Sub SendKeepAliveTimer_Elapsed(sender As Object, e As Timers.ElapsedEventArgs)
-        Try
-            'TODO: Initially had some problems with keep alive packet interrupting other requests and honestly I can't remember if that is fixed or not
-            If SendKeepAlive Then
-                SyncLock _NetworkLock
-                    Send(New EmptyMessage(NetworkMessage.MessageType.KeepAlive))
-                    Dim Response As NetworkMessage = ReceiveMessage()
-                    If Response.Type = NetworkMessage.MessageType.KeepAliveResponse Then
-                        _KeepAliveTimer.Start()
-                    Else
-                        Me.Close()
-                    End If
-                End SyncLock
-            End If
-        Catch ex As Exception
-            Log.WriteEntry("Error getting keep alive response: " & ex.Message, False)
-            Me.Close()
-        End Try
+        'TODO: Uncomment this when we find a good way to stop this from interrupting long running network requests that are waiting for specific responses from server.
+        '      Could use a separate TCP connection but then that doesn't prove the main connection is still alive. Probably good enough though as it would notify
+        '      user when machine loses connection entirely or shuts down etc
+
+        'Try
+        '    If SendKeepAlive Then
+        '        SyncLock _NetworkLock
+        '            Send(New EmptyMessage(NetworkMessage.MessageType.KeepAlive))
+        '            Dim Response As NetworkMessage = ReceiveMessage()
+        '            If Response.Type = NetworkMessage.MessageType.KeepAliveResponse Then
+        '                _KeepAliveTimer.Start()
+        '            Else
+        '                Me.Close()
+        '            End If
+        '        End SyncLock
+        '    End If
+        'Catch ex As Exception
+        '    Log.WriteEntry("Error getting keep alive response: " & ex.Message, False)
+        '    Me.Close()
+        'End Try
     End Sub
 
     Private Sub ClearInboundNetworkBuffer()
@@ -310,6 +319,8 @@ Public Class NetworkSession
             End If
         End If
     End Sub
+
+
 
 
 

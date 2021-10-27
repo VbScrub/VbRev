@@ -1,6 +1,6 @@
 ﻿Imports System.Runtime.InteropServices
 
-Public Class ProcessServer
+Public Class ProcessHelper
 
     Public Shared Sub StartProcess(ProcArgs As NewProcessArgs)
         Dim Proc As New Process
@@ -78,8 +78,8 @@ Public Class ProcessServer
         'undocumented NtWow64QueryInformationProcess64 and NtWow64ReadVirtualMemory64 APIs
         Dim Is64BitPeb As Boolean = False
         If Environment.Is64BitOperatingSystem() Then
-            If OsServer.Is32BitProcessOn64BitOs(Process.GetCurrentProcess) Then
-                If Not OsServer.Is32BitProcessOn64BitOs(TargetProcess) Then
+            If OsHelper.Is32BitProcessOn64BitOs(Process.GetCurrentProcess) Then
+                If Not OsHelper.Is32BitProcessOn64BitOs(TargetProcess) Then
                     'TODO: Use NtWow64ReadVirtualMemory64 to read from 64 bit processes when we are a 32 bit process instead of throwing this exception
                     Throw New InvalidOperationException("This function cannot be used against a 64 bit process when the calling process is 32 bit")
                 End If

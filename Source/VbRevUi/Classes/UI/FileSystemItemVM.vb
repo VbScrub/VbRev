@@ -69,7 +69,7 @@ Public Class FileSystemItemVM : Implements INotifyPropertyChanged
     Public ReadOnly Property Size As String
         Get
             If Me.Data.Type = FileSystemItem.FileItemType.File Then
-                Return FileSystemHelper.GetFileSizeString(Data.Size)
+                Return FileHelper.GetFileSizeString(Data.Size)
             Else
                 Return String.Empty
             End If

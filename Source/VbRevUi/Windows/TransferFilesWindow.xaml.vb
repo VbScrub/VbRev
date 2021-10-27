@@ -209,7 +209,7 @@ Public Class TransferFilesWindow
                 CancelBtn.Visibility = Windows.Visibility.Collapsed
                 CloseBtn.Visibility = Windows.Visibility.Visible
                 If Not _FatalErrorEncountered Then
-                    If SingleFile Then
+                    If SingleFile Then 'If only one file was selected
                         If _Cancelled Then
                             Me.Title = _TransferModeName & " Cancelled"
                         Else
@@ -217,6 +217,7 @@ Public Class TransferFilesWindow
                                 Case FileTransferItem.ProgressState.Complete
                                     If IsUpload Then
                                         Me.DirectoryRefreshRequired = True
+                                        Me.Close()
                                     End If
                                     If OpenAutoChk.IsChecked AndAlso Not IsUpload Then
                                         OpenFile(_TransferVmList(0), True)
@@ -231,20 +232,25 @@ Public Class TransferFilesWindow
                                                 _TransferVmList(0).ProgressDetails, "File Transfer Failed", MessageBoxButton.OK, MessageBoxImage.Error)
                             End Select
                         End If
-                    Else 'Multiple files
+                    Else 'If multiple files were selected
                         If _Cancelled Then
                             Me.Title = _TransferModeName & " Cancelled"
                         Else
                             Me.Title = _TransferModeName & " Finished"
                         End If
                         If IsUpload Then
+                            Dim AllUploadsSuccessfull As Boolean = True
                             'If at least one item was uploaded, tell the main window to issue a directory refresh request
                             For Each Transfer As FileTransferItemVM In _TransferVmList
                                 If Transfer.Data.CurrentState = FileTransferItem.ProgressState.Complete Then
                                     Me.DirectoryRefreshRequired = True
-                                    Exit For
+                                Else
+                                    AllUploadsSuccessfull = False
                                 End If
                             Next
+                            If AllUploadsSuccessfull Then
+                                Me.Close()
+                            End If
                         End If
                     End If
                     Me.TitleLbl.Text = Me.Title

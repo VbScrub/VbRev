@@ -26,15 +26,15 @@
                
             </Grid>
              
-             <TextBox x:Name="CmdOutputBox" Margin="0,0,0,4" IsReadOnly="True" VerticalScrollBarVisibility="Visible" FontFamily="Consolas" TextWrapping="Wrap" Background="Black" Foreground="White" />
+             <TextBox x:Name="CmdOutputBox" Margin="0,0,0,4" IsReadOnly="True" TabIndex="1" VerticalScrollBarVisibility="Visible" FontFamily="Consolas" TextWrapping="Wrap" Background="Black" Foreground="White" />
         </DockPanel>
        
        
-        <GridSplitter VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="4" Background="LightGray" />
+        <GridSplitter VerticalAlignment="Bottom" Focusable="False" HorizontalAlignment="Stretch" Height="4" Background="LightGray" />
         <DockPanel Grid.Row="1" Margin="0,3,0,0" Name="SendCommandPanel" >
             <TextBlock Text="Command: " VerticalAlignment="Top" Margin="0,5,2,0" DockPanel.Dock="Left" />
-            <Button Name="ExecuteCmdBtn" VerticalAlignment="Top" DockPanel.Dock="Right" Margin="3,1,0,0" Content="Send" IsDefault="True" Height="25" Padding="14,0,14,0" />
-            <TextBox x:Name="CmdBox" TextWrapping="Wrap" PreviewKeyDown="CmdBox_PreviewKeyDown" Padding="0,3,0,0" />
+            <Button Name="ExecuteCmdBtn" TabIndex="3" VerticalAlignment="Top" DockPanel.Dock="Right" Margin="3,1,0,0" Content="Send" Height="25" Padding="14,0,14,0" />
+            <TextBox TabIndex="2" x:Name="CmdBox" TextWrapping="Wrap" PreviewKeyDown="CmdBox_PreviewKeyDown" Padding="0,3,0,0" />
         </DockPanel>
     </Grid>
    
