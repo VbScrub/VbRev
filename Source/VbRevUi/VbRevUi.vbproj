@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\ILMerge.3.0.41\build\ILMerge.props" Condition="Exists('..\packages\ILMerge.3.0.41\build\ILMerge.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -11,6 +12,8 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <MyType>Custom</MyType>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -70,6 +73,10 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\VbRevShared\bin\Release\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationFramework.Aero" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms" />
@@ -90,11 +97,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Classes\AppHelper.vb" />
+    <Compile Include="Classes\UiHelper.vb" />
     <Compile Include="Classes\ClientBase.vb" />
     <Compile Include="Classes\CmdLineClient.vb" />
     <Compile Include="Classes\IconHelper.vb" />
-    <Compile Include="Classes\NetworkingClient.vb" />
+    <Compile Include="Classes\NetworkAdapterClient.vb" />
     <Compile Include="Classes\ProcessClient.vb" />
     <Compile Include="Classes\ServiceClient.vb" />
     <Compile Include="Classes\UI\CmdLineTabVM.vb" />
@@ -153,6 +160,9 @@
     </Compile>
     <Compile Include="Windows\TransferFilesWindow.xaml.vb">
       <DependentUpon>TransferFilesWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\UserInfoWindow.xaml.vb">
+      <DependentUpon>UserInfoWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="Windows\RenameWindow.xaml">
       <SubType>Designer</SubType>
@@ -214,6 +224,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Windows\UserInfoWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Import Include="System.Linq" />
@@ -232,7 +246,7 @@
     <Import Include="System.Windows.Media" />
     <Import Include="System.Windows.Media.Imaging" />
     <Import Include="System.Windows.Navigation" />
-    <Import Include="VbRev.Shared" />
+    <Import Include="VbRevShared" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="My Project\AssemblyInfo.vb">
@@ -262,105 +276,25 @@
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
     <AppDesigner Include="My Project\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\close_b_16.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\close_16.png" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="middleware_48.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\monitor_16.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\user_16.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\privilege_16.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\primary_key_16.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\folder_16.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\document_16.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\ok_16.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\table_header_config_48.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\zoom_16.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\Refresh.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\refresh_24.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\zoom_24.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\harddrive_16.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\help_16.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\VbRevShared\VbRevShared.vbproj">
-      <Project>{143E457C-C577-421C-884A-6B2580688958}</Project>
-      <Name>VbRevShared</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\PC_48.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\monitor_info_48.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\summary_16.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\window_16.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\summary_next_16.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\window_info_48.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\up_24.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\up.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\file_sharing_48.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\ok_48.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\close_b_48.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\window_close_16.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\window_add_48.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\net_card_16.ico" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\AboutLogo.png" />
@@ -369,7 +303,90 @@
     <SplashScreen Include="Images\VbRevSplash.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\gear_16.png" />
+    <ProjectReference Include="..\VbRevShared\VbRevShared.vbproj">
+      <Project>{143e457c-c577-421c-884a-6b2580688958}</Project>
+      <Name>VbRevShared</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\IconShock\monitor_24.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons8\icons8_windows_client.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons8\monitor_16px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons8\access_24px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons8\windows_client_24px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons8\monitor_24px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons8\person_24px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons8\disconnected_16px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons8\up_down_arrow_48px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons8\cancel_48px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons8\ok_48px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\IconShock\new_window_48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons8\replay_16px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons8\restart_16px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons8\search_16px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons8\settings_16px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons8\folder_16px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons8\hdd_16px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons8\document_16px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons8\icons8_more_info.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons8\group_16px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons8\icons8_administrative_tools.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons8\icons8_about.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons8\network_card_16px.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\ILMerge.3.0.41\build\ILMerge.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ILMerge.3.0.41\build\ILMerge.props'))" />
+    <Error Condition="!Exists('..\packages\ILMerge.MSBuild.Task.1.0.7\build\ILMerge.MSBuild.Task.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ILMerge.MSBuild.Task.1.0.7\build\ILMerge.MSBuild.Task.targets'))" />
+  </Target>
+  <Import Project="..\packages\ILMerge.MSBuild.Task.1.0.7\build\ILMerge.MSBuild.Task.targets" Condition="Exists('..\packages\ILMerge.MSBuild.Task.1.0.7\build\ILMerge.MSBuild.Task.targets')" />
 </Project>

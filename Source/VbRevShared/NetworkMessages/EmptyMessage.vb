@@ -5,7 +5,7 @@ Public Class EmptyMessage : Inherits NetworkMessage
         Return Nothing
     End Function
 
-    Public Overrides Function FromBytes(Bytes() As Byte) As NetworkMessage
+    Public Overrides Function FromBytes(Bytes() As Byte, Length As Integer) As NetworkMessage
         Return New EmptyMessage
     End Function
 

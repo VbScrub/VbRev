@@ -11,7 +11,7 @@ Public Class NetworkSession
         End Property
     End Class
 
-    Public Const ProtocolVersion As Integer = 5 'TODO: Increase this every time you change something that breaks compatibility between this version and old versions
+    Public Const ProtocolVersion As Integer = 7 'TODO: Increase this every time you change something that breaks compatibility between this version and old versions
     Public Const ReceiveBufferSize As Integer = 6144 '6 KB
 
     Public Event Closed()
@@ -28,7 +28,6 @@ Public Class NetworkSession
     Private _KeepAliveTimer As New Timers.Timer(KeepAliveInterval.TotalMilliseconds) With {.AutoReset = False}
     Private _CurrentBuffer() As Byte
     Private _Closing As Boolean = False
-
 
     Public Sub New(NetSession As TcpClient, DoKeepAlive As Boolean, NetworkReadTimeout As TimeSpan)
         Me.Client = NetSession
@@ -86,11 +85,12 @@ Public Class NetworkSession
                     _CurrentBuffer = TempBuffer
                     Log.WriteEntry("New buffer length " & _CurrentBuffer.Length, True)
                 End If
+
                 If Not CanConstructMessage(_CurrentBuffer, CurrentMessageLength) Then
-                    Log.WriteEntry("Can't construct full message yet", True)
+                    Log.WriteEntry("Can't construct full message yet (full message length is " & CurrentMessageLength & ")", True)
                     Continue Do
                 End If
-                Log.WriteEntry("Can construct full message", True)
+                Log.WriteEntry("Can construct full message (full message length is " & CurrentMessageLength & ")", True)
 
                 'Construct message from byte array
                 Dim Message As NetworkMessage = ConstructMessage(_CurrentBuffer, CurrentMessageLength)
@@ -100,7 +100,7 @@ Public Class NetworkSession
                 Else
                     _CurrentBuffer = Nothing
                 End If
-                Log.WriteEntry("Returning message", True)
+                Log.WriteEntry("Received message of type " & Message.Type.ToString, False)
                 Return Message
             Loop
         Catch ex As Exception
@@ -127,6 +127,7 @@ Public Class NetworkSession
         End If
         'Get the total length of the message by grabbing first 32 bit integer after the protocol ID
         MessageLength = BitConverter.ToInt32(Bytes, NetworkMessage.ProtocolId.Length)
+        Log.WriteEntry("Full message length is " & MessageLength & " and so far we have received " & Bytes.Length, True)
         'If the total length of the message is longer than our current data, wait for more data
         If MessageLength > Bytes.Length Then
             Return False
@@ -136,7 +137,7 @@ Public Class NetworkSession
     End Function
 
     Private Function ConstructMessage(Bytes() As Byte, Length As Integer) As NetworkMessage
-        Log.WriteEntry("Constructing message from " & Bytes.Length & " bytes", True)
+        Log.WriteEntry("Constructing message from " & Length & " bytes", True)
         Dim Message As NetworkMessage = Nothing
         'Check for valid message type
         Dim MsgTypeInt As Integer = BitConverter.ToInt32(Bytes, NetworkMessage.ProtocolId.Length + 4)
@@ -145,7 +146,7 @@ Public Class NetworkSession
         End If
         Dim MsgType As NetworkMessage.MessageType = DirectCast(MsgTypeInt, NetworkMessage.MessageType)
         'Get correct network message carrier class for message type so that we call correct FromBytes override
-        'Not super important right now as they all just user BinaryFormatter serialization, but will be important later when individual message formats are optimised
+        'Not super important right now as they all just use JSON serialization, but will be important later when individual message formats are optimised
         Select Case NetworkMessage.MessageTypeToCarrier(MsgType)
             Case NetworkMessage.MessageCarrierType.Void
                 Message = New EmptyMessage()
@@ -181,11 +182,13 @@ Public Class NetworkSession
                 Message = New OsInfoResponseMessage
             Case NetworkMessage.MessageCarrierType.EnumServicesResponse
                 Message = New EnumServicesResponseMessage
+            Case NetworkMessage.MessageCarrierType.UserInfoResponse
+                Message = New UserInfoResponseMessage
             Case Else
                 Throw New ApplicationException("Unrecognised network message type " & MsgType.ToString)
         End Select
         'Deserialize bytes to object with FromBytes method
-        Message = Message.FromBytes(Bytes)
+        Message = Message.FromBytes(Bytes, Length)
         Message.Type = MsgType
         Message.BinaryLength = Length
         Log.WriteEntry("Constructed " & Message.Type.ToString & " with length " & Message.BinaryLength.ToString, True)

@@ -86,7 +86,7 @@ Public Class ServiceHelper
             End If
             Dim ServiceStatusDetails As WinApi.SERVICE_STATUS_PROCESS
             ServiceStatusDetails = DirectCast(Marshal.PtrToStructure(BufferPtr, GetType(WinApi.SERVICE_STATUS_PROCESS)), WinApi.SERVICE_STATUS_PROCESS)
-            Return (ServiceStatusDetails.dwCurrentState)
+            Return ServiceStatusDetails.dwCurrentState
         Finally
             If Not BufferPtr = IntPtr.Zero Then
                 Marshal.FreeHGlobal(BufferPtr)
@@ -169,5 +169,51 @@ Public Class ServiceHelper
         End If
         Return ScmPtr
     End Function
+
+    Public Shared Sub StartService(ServiceName As String)
+        Dim ScmHandle As IntPtr
+        Dim ServiceHandle As IntPtr
+        Try
+            ScmHandle = GetServiceControlManagerHandle(WinApi.ServiceManagerRights.SC_MANAGER_CONNECT)
+            ServiceHandle = WinApi.OpenService(ScmHandle, ServiceName, WinApi.ServiceRights.SERVICE_START)
+            If ServiceHandle = IntPtr.Zero Then
+                Throw New ComponentModel.Win32Exception
+            End If
+            If Not WinApi.StartService(ServiceHandle, 0, Nothing) Then
+                Throw New ComponentModel.Win32Exception
+            End If
+        Finally
+            If Not ServiceHandle = IntPtr.Zero Then
+                WinApi.CloseServiceHandle(ServiceHandle)
+            End If
+            If Not ScmHandle = IntPtr.Zero Then
+                WinApi.CloseServiceHandle(ScmHandle)
+            End If
+        End Try
+
+    End Sub
+
+    Public Shared Sub StopService(ServiceName As String)
+        Dim ScmHandle As IntPtr
+        Dim ServiceHandle As IntPtr
+        Try
+            ScmHandle = GetServiceControlManagerHandle(WinApi.ServiceManagerRights.SC_MANAGER_CONNECT)
+            ServiceHandle = WinApi.OpenService(ScmHandle, ServiceName, WinApi.ServiceRights.SERVICE_STOP)
+            If ServiceHandle = IntPtr.Zero Then
+                Throw New ComponentModel.Win32Exception
+            End If
+            If Not WinApi.ControlService(ServiceHandle, WinApi.SERVICE_CONTROL_CODES.SERVICE_CONTROL_STOP, New WinApi.SERVICE_STATUS_PROCESS) Then
+                Throw New ComponentModel.Win32Exception
+            End If
+        Finally
+            If Not ServiceHandle = IntPtr.Zero Then
+                WinApi.CloseServiceHandle(ServiceHandle)
+            End If
+            If Not ScmHandle = IntPtr.Zero Then
+                WinApi.CloseServiceHandle(ScmHandle)
+            End If
+        End Try
+    End Sub
+
 
 End Class

@@ -16,7 +16,7 @@
             <Grid DockPanel.Dock="Top">
                 <Button Content="Load" Name="RefreshBtn" Height="23" HorizontalAlignment="Left" Padding="18,0,18,0" />
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Image Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" VerticalAlignment="Center" Source="/VbRevUi;component/Images/zoom_16.png" />
+                    <Image Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" VerticalAlignment="Center" Source="/VbRevUi;component/Images/Icons8/search_16px.png" />
                     <TextBlock Text="Filter: " VerticalAlignment="Center" Margin="2,0,0,0" />
                     <TextBox Width="160" Name="FilterBox" TextChanged="FilterBox_TextChanged" />
                 </StackPanel>

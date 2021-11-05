@@ -14,10 +14,8 @@
             Case NetworkMessage.MessageType.Unknown
                 Throw New ApplicationException("Unrecognised message type received from server")
         End Select
-        If Not ExpectedResponse = NetworkMessage.MessageType.Any Then 'callers can specify type of Any so they can handle long running ops (checking returned object for StillWorking type)
-            If Not Response.Type = ExpectedResponse Then
-                Throw New ApplicationException("Unexpected response from server (expecting " & ExpectedResponse.ToString & " but received " & Response.Type.ToString & ")")
-            End If
+        If Not Response.Type = ExpectedResponse Then
+            Throw New ApplicationException("Unexpected response from server (expecting " & ExpectedResponse.ToString & " but received " & Response.Type.ToString & ")")
         End If
         Return Response
     End Function

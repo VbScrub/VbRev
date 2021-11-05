@@ -11,7 +11,6 @@ Public Class NetworkMessage 'Base class inherited by all messages sent over netw
         Success = 1
         ErrorUnknown = 2
         ErrorDetail = 3
-        Any = 4
         KeepAlive = 100
         KeepAliveResponse = 101
         StillWorking = 102
@@ -44,9 +43,14 @@ Public Class NetworkMessage 'Base class inherited by all messages sent over netw
         OsInfoResponse = 225
         EnumServicesRequest = 226
         EnumServicesResponse = 227
+        UserInfoRequest = 228
+        UserInfoResponse = 229
+        StartServiceRequest = 230
+        StopServiceRequest = 231
+
     End Enum
 
-    'TODO: When adding a new item to this enum add a corresponding Select Case branch to NetworkSession ConstructMessage method
+    'TODO: When adding a new item to this enum add a corresponding Select Case branch to NetworkSession.ConstructMessage method
     Public Enum MessageCarrierType As Integer
         Unknown
         Void
@@ -65,6 +69,7 @@ Public Class NetworkMessage 'Base class inherited by all messages sent over netw
         EnumTcpListenersResponse
         OsInfoResponse
         EnumServicesResponse
+        UserInfoResponse
     End Enum
 
 
@@ -110,6 +115,10 @@ Public Class NetworkMessage 'Base class inherited by all messages sent over netw
                 _MessageTypeToCarrier.Add(MessageType.OsInfoResponse, MessageCarrierType.OsInfoResponse)
                 _MessageTypeToCarrier.Add(MessageType.EnumServicesRequest, MessageCarrierType.SingleParamBool)
                 _MessageTypeToCarrier.Add(MessageType.EnumServicesResponse, MessageCarrierType.EnumServicesResponse)
+                _MessageTypeToCarrier.Add(MessageType.UserInfoRequest, MessageCarrierType.Void)
+                _MessageTypeToCarrier.Add(MessageType.UserInfoResponse, MessageCarrierType.UserInfoResponse)
+                _MessageTypeToCarrier.Add(MessageType.StartServiceRequest, MessageCarrierType.SingleParamString)
+                _MessageTypeToCarrier.Add(MessageType.StopServiceRequest, MessageCarrierType.SingleParamString)
             End If
             Return _MessageTypeToCarrier
         End Get
@@ -117,8 +126,9 @@ Public Class NetworkMessage 'Base class inherited by all messages sent over netw
 
     Public Shared Property ProtocolId As Byte() = New Byte(1) {86, 98}
 
-    <NonSerialized()> _
+    <NonSerialized(), Newtonsoft.Json.JsonIgnore>
     Private _Type As MessageType
+    <Newtonsoft.Json.JsonIgnore>
     Public Property Type As MessageType
         Get
             Return _Type
@@ -128,8 +138,9 @@ Public Class NetworkMessage 'Base class inherited by all messages sent over netw
         End Set
     End Property
 
-    <NonSerialized()>
+    <NonSerialized(), Newtonsoft.Json.JsonIgnore>
     Private _BinaryLength As Integer
+    <Newtonsoft.Json.JsonIgnore>
     Public Property BinaryLength As Integer
         Get
             Return _BinaryLength
@@ -139,15 +150,21 @@ Public Class NetworkMessage 'Base class inherited by all messages sent over netw
         End Set
     End Property
 
-    <NonSerialized()> _
-    Private _Formatter As New Runtime.Serialization.Formatters.Binary.BinaryFormatter
+    <NonSerialized, Newtonsoft.Json.JsonIgnore>
+    Private Shared _JsonBinder As New JsonNoAssemblyBinder
 
     'Can be implemented by subclasses to get their class specific data (file path arguments etc) if BinaryFormatter is not suitable
     Protected Overridable Function GetDataBytes() As Byte()
-        Using MemStrm As New IO.MemoryStream
-            _Formatter.Serialize(MemStrm, Me)
-            Return MemStrm.ToArray
-        End Using
+        Dim settings As New Newtonsoft.Json.JsonSerializerSettings()
+        settings.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Objects
+        settings.SerializationBinder = _JsonBinder
+        Dim Json As String = Newtonsoft.Json.JsonConvert.SerializeObject(Me, settings)
+        Log.WriteEntry("Serialized JSON string: " & Json, True)
+        Return Text.Encoding.Unicode.GetBytes(Json)
+        'Using MemStrm As New IO.MemoryStream
+        '    _XmlSerializer.Serialize(MemStrm, Me)
+        '    Return MemStrm.ToArray
+        'End Using
     End Function
 
     Public Function GetBytes() As Byte()
@@ -179,10 +196,16 @@ Public Class NetworkMessage 'Base class inherited by all messages sent over netw
     End Function
 
 
-    Public Overridable Function FromBytes(Bytes() As Byte) As NetworkMessage
-        Using MemStrm As New IO.MemoryStream(Bytes, ProtocolId.Length + 8, Bytes.Length - (ProtocolId.Length + 8))
-            Return DirectCast(_Formatter.Deserialize(MemStrm), NetworkMessage)
-        End Using
+    Public Overridable Function FromBytes(Bytes() As Byte, Length As Integer) As NetworkMessage
+        Dim JsonString As String = Text.Encoding.Unicode.GetString(Bytes, ProtocolId.Length + 8, Length - (ProtocolId.Length + 8))
+        Dim settings As New Newtonsoft.Json.JsonSerializerSettings()
+        settings.SerializationBinder = _JsonBinder
+        settings.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Objects
+        Log.WriteEntry("Deserializing JSON string: " & JsonString, True)
+        Return Newtonsoft.Json.JsonConvert.DeserializeObject(Of NetworkMessage)(JsonString, settings)
+        'Using MemStrm As New IO.MemoryStream(Bytes, ProtocolId.Length + 8, Bytes.Length - (ProtocolId.Length + 8))
+        '    Return DirectCast(_XmlSerializer.Deserialize(MemStrm), NetworkMessage)
+        'End Using
     End Function
 
     Public Shared Function IsValidProtocolId(Bytes() As Byte) As Boolean

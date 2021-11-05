@@ -80,23 +80,19 @@ Public Class FileSystemItemVM : Implements INotifyPropertyChanged
         Get
             Select Case Data.Type
                 Case FileSystemItem.FileItemType.Directory
-                    Return New BitmapImage(New Uri("\..\Images\folder_16.png", UriKind.Relative))
+                    Return New BitmapImage(New Uri("\..\Images\Icons8\folder_16px.png", UriKind.Relative))
                 Case FileSystemItem.FileItemType.Drive
-                    Return New BitmapImage(New Uri("\..\Images\harddrive_16.png", UriKind.Relative))
+                    Return New BitmapImage(New Uri("\..\Images\Icons8\hdd_16px.png", UriKind.Relative))
                 Case FileSystemItem.FileItemType.File
-                    If String.IsNullOrEmpty(_Extension) Then
-                        Return New BitmapImage(New Uri("\..\Images\summary_16.png", UriKind.Relative))
-                    Else
+                    If Not String.IsNullOrEmpty(_Extension) Then
                         Try
                             Return IconHelper.GetFileExtensionIcon(_Extension)
                         Catch ex As Exception
-                            Log.WriteEntry("Error getting icon for extensin " & _Extension & " : " & ex.Message, True)
+                            Log.WriteEntry("Error getting icon for extension " & _Extension & " : " & ex.Message, True)
                         End Try
                     End If
-                    Return New BitmapImage(New Uri("\..\Images\summary_16.png", UriKind.Relative))
-                Case Else
-                    Return New BitmapImage(New Uri("\..\Images\help_16.png", UriKind.Relative))
             End Select
+            Return New BitmapImage(New Uri("\..\Images\Icons8\document_16px.png", UriKind.Relative))
         End Get
     End Property
 

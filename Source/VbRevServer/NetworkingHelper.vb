@@ -1,4 +1,4 @@
-﻿Imports VbRev.Shared.WinApi
+﻿Imports VbRevShared.WinApi
 Imports System.Net.Sockets
 Imports System.Runtime.InteropServices
 
@@ -85,7 +85,9 @@ Public Class NetworkingHelper
                             Listener.PID = CInt(TcpRow.owningPid)
                             Try
                                 Using Proc As Process = Process.GetProcessById(Listener.PID)
-                                    Listener.ProcessName = Proc.ProcessName
+                                    'Extension won't always be .exe but couldn't find any 100% reliable way to get the file extension if
+                                    'we are running as low priv account and it looks weird without any extension
+                                    Listener.ProcessName = Proc.ProcessName & ".exe"
                                 End Using
                             Catch ex As Exception
                                 Log.WriteEntry("Error getting process name from PID " & Listener.PID & " : " & ex.Message, False)
@@ -103,6 +105,7 @@ Public Class NetworkingHelper
         Else
             Throw New ComponentModel.Win32Exception
         End If
+        ResultsList.Sort()
         Return ResultsList
     End Function
 

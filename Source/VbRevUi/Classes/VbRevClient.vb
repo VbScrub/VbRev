@@ -28,7 +28,10 @@
         Return DirectCast(GetServerResponse(NetworkMessage.MessageType.OsInfoResponse), OsInfoResponseMessage)
     End Function
 
-    
+    Public Function GetUserInfo() As UserInfoResponseMessage
+        NetClient.Send(New EmptyMessage(NetworkMessage.MessageType.UserInfoRequest))
+        Return DirectCast(GetServerResponse(NetworkMessage.MessageType.UserInfoResponse), UserInfoResponseMessage)
+    End Function
 
 
 

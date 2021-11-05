@@ -1,6 +1,7 @@
 ﻿Imports System.Net.Sockets
 
 Imports System.Collections.ObjectModel
+Imports System.Runtime.InteropServices
 
 Public Class MainWindow
 
@@ -18,7 +19,6 @@ Public Class MainWindow
     Private _Listener As TcpListener
     Private _Port As Integer
     Private _RemoteMachineName As String = String.Empty
-    Private _SessionId As Integer = -1
     Private _RunningAsUser As String = String.Empty
     Private _StoppingListener As Boolean
 
@@ -46,31 +46,9 @@ Public Class MainWindow
         End Try
     End Sub
 
-    Public Shared Function GetFqdnFromNetbiosDomainName(ByVal NetbiosDomain As String) As String
-        Dim DcInfoPtr As IntPtr
-        Dim DcInfo As New WinApi.DomainControllerInfo
-        Dim Flags As WinApi.DsGetDcNameFlags = WinApi.DsGetDcNameFlags.DS_DIRECTORY_SERVICE_PREFERRED Or WinApi.DsGetDcNameFlags.DS_IS_FLAT_NAME Or WinApi.DsGetDcNameFlags.DS_RETURN_DNS_NAME
-        Try
-            Dim Result As UInteger = WinApi.DsGetDcName(Nothing, NetbiosDomain, Nothing, Nothing, Flags, DcInfoPtr)
-            If Result = 0 Then
-                Runtime.InteropServices.Marshal.PtrToStructure(DcInfoPtr, DcInfo)
-                Return DcInfo.DomainName
-            End If
-            Throw New System.ComponentModel.Win32Exception(CInt(Result))
-        Finally
-            If Not DcInfoPtr = IntPtr.Zero Then
-                WinApi.NetApiBufferFree(DcInfoPtr)
-            End If
-        End Try
-    End Function
-   
-   
-
     Private Sub Window_Loaded(sender As System.Object, e As System.Windows.RoutedEventArgs) Handles MyBase.Loaded
         MainGrid.Visibility = Windows.Visibility.Collapsed
         InitialGrid.Visibility = Windows.Visibility.Visible
-        'Remove above before release
-        '==================================
         Try
             System.Threading.Thread.CurrentThread.Name = "UI_THREAD"
             HookupPageEventHandlers(New List(Of TabPage) From {FileMainPage, ProcessMainPage, CmdMainPage, NetworkingMainPage, ServicesMainPage})
@@ -155,7 +133,7 @@ Public Class MainWindow
                 AddHandler _VbClient.NetClient.Closed, AddressOf VbClient_Closed
                 FileMainPage.Client = New FileSystemClient(_VbClient.NetClient, _Port)
                 ProcessMainPage.Client = New ProcessClient(_VbClient.NetClient)
-                NetworkingMainPage.Client = New NetworkingClient(_VbClient.NetClient)
+                NetworkingMainPage.Client = New NetworkAdapterClient(_VbClient.NetClient)
                 ServicesMainPage.Client = New ServiceClient(_VbClient.NetClient)
                 CmdMainPage.Client = _VbClient.NetClient
                 CmdMainPage.Port = _Port
@@ -167,7 +145,6 @@ Public Class MainWindow
                 _ServerInfo = _VbClient.GetInitialInfo
                 _RunningAsUser = _ServerInfo.Username
                 _RemoteMachineName = _ServerInfo.MachineName
-                _SessionId = _ServerInfo.SessionId
                 FileMainPage.MachineName = _RemoteMachineName
                 Dim CurrentFilesDirectory As String = _ServerInfo.CurrentDirectory
                 If String.IsNullOrWhiteSpace(CurrentFilesDirectory) Then
@@ -206,13 +183,13 @@ Public Class MainWindow
             If Me.IsLoaded Then
                 Dim IpAndMachine As String = _VbClient.NetClient.RemoteIp & If(_RemoteMachineName = String.Empty, String.Empty, " (" & _RemoteMachineName & ")")
                 Me.Title = "VbRev - " & IpAndMachine
-                Me.Width = 790
+                Me.Width = 890
                 Me.Height = 650
                 InitialGrid.Visibility = Windows.Visibility.Collapsed
                 MainGrid.Visibility = Windows.Visibility.Visible
                 RenameWindowMenuItem.Visibility = Visibility.Visible
                 ConnectedToLbl.Text = IpAndMachine
-                RunningAsLbl.Text = _RunningAsUser & "  (Session ID: " & _SessionId.ToString & ")"
+                RunningAsLbl.Text = _RunningAsUser
                 FileMainPage.InitialLoad(CurrentDirectory)
             End If
         Else
@@ -308,7 +285,7 @@ Public Class MainWindow
     End Sub
 
     Private Sub UsageMenuItem_Click(sender As System.Object, e As System.Windows.RoutedEventArgs)
-        AppHelper.NotInBeta()
+        UiHelper.NotInBeta()
     End Sub
 
     Private Sub TaskbarTimer_Tick(sender As Object, e As EventArgs)
@@ -324,7 +301,7 @@ Public Class MainWindow
         End Try
     End Sub
 
-  
+
     Private Sub UiSendingServerRequest(StatusMessage As String)
         MainTabControl.IsEnabled = False
         Progbar.Visibility = Windows.Visibility.Visible
@@ -389,7 +366,7 @@ Public Class MainWindow
     End Sub
 
     Private Sub FileMainPage_OpenCmd(DirPath As String)
-        CmdMainPage.StartNewCmdline(New NewProcessArgs("cmd.exe",Nothing,DirPath))
+        CmdMainPage.StartNewCmdline(New NewProcessArgs("cmd.exe", Nothing, DirPath))
     End Sub
 
 
@@ -407,5 +384,13 @@ Public Class MainWindow
         If RenameWnd.ShowDialog Then
             Me.Title = RenameWnd.WindowTitle
         End If
+    End Sub
+
+    Private Sub UserInfoLink_Click(sender As Object, e As RoutedEventArgs)
+        Dim UserInfoWnd As New UserInfoWindow
+        UserInfoWnd.Username = _RunningAsUser
+        UserInfoWnd.Client = _VbClient
+        UserInfoWnd.Show()
+
     End Sub
 End Class

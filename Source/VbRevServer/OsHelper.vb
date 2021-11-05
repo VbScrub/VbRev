@@ -1,4 +1,4 @@
-﻿Imports VbRev.Shared.WinApi
+﻿Imports VbRevShared.WinApi
 Imports System.Runtime.InteropServices
 
 Public Class OsHelper

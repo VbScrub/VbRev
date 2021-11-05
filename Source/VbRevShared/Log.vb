@@ -5,6 +5,7 @@
 
     <DebuggerStepThrough()>
     Public Shared Sub WriteEntry(Message As String, VerboseOnly As Boolean)
+        'Debug.WriteLine(System.Threading.Thread.CurrentThread.Name & " - " & Message)
         If Enabled Then
             If VerboseOnly AndAlso Not VerboseEnabled Then
                 Exit Sub

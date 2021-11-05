@@ -1,7 +1,7 @@
 ﻿<Window x:Class="AboutWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="About" WindowStartupLocation="CenterScreen" SizeToContent="Height" ResizeMode="NoResize" Width="300" Icon="/VbRevUi;component/Images/window_info_48.png">
+    Title="About" WindowStartupLocation="CenterScreen" SizeToContent="Height" ResizeMode="NoResize" Width="340" Icon="/VbRevUi;component/Images/Icons8/icons8_about.ico">
     <Window.Resources>
         <Style TargetType="TextBlock">
             <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
@@ -28,7 +28,7 @@
         <Grid Grid.Row="1" Margin="8,8,8,1">
             <TabControl>
                 <TabItem Header="About VbRev">
-                    <Grid Margin="8">
+                    <Grid Margin="8,8,8,12">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
@@ -37,15 +37,16 @@
                             <RowDefinition Height="27" />
                             <RowDefinition Height="27" />
                             <RowDefinition Height="27" />
+                            <RowDefinition Height="30" />
                         </Grid.RowDefinitions>
                         <TextBlock Text="Version:" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" />
-                        <TextBlock Name="VersionLbl" Margin="8,0,0,0" VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" />
+                        <TextBlock Name="VersionLbl" HorizontalAlignment="Left" Margin="8,0,0,0" VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" />
                         <TextBlock Text="Build Date:" VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" />
-                        <TextBlock Name="BuildDateLbl" Margin="8,0,0,0" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" />
+                        <TextBlock Name="BuildDateLbl" HorizontalAlignment="Left" Margin="8,0,0,0" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" />
                         <TextBlock Text="Website:" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0" />
-                        <TextBlock Margin="8,0,0,0" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1"><Hyperlink Name="WebsiteLnk" Click="WebsiteLnk_Click">http://VbScrub.com</Hyperlink></TextBlock>
-                        
-                       
+                        <TextBlock Margin="8,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1"><Hyperlink Name="WebsiteLnk" Click="WebsiteLnk_Click">http://VbScrub.com</Hyperlink></TextBlock>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Row="4" Grid.ColumnSpan="2" >Icons from <Hyperlink Name="Icons8Lnk" Click="Icons8Lnk_Click">icons8.com</Hyperlink> and <Hyperlink Name="IconShockLnk"
+                                                                                                                                                                                             Click="IconShockLnk_Click">iconshock.com</Hyperlink></TextBlock>
                     </Grid>
                 </TabItem>
             </TabControl>

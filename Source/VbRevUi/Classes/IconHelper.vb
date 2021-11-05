@@ -6,7 +6,7 @@ Public Class IconHelper
     Private Shared IconCache As New Dictionary(Of String, BitmapSource) From {{".exe", New BitmapImage(New Uri("\..\Images\window_16.png", UriKind.Relative))},
                                                                              {".lnk", New BitmapImage(New Uri("\..\Images\summary_next_16.png", UriKind.Relative))}}
 
-    Private Shared _DefaultIcon As New BitmapImage(New Uri("\..\Images\summary_16.png", UriKind.Relative))
+    Private Shared _DefaultIcon As New BitmapImage(New Uri("\..\Images\Icons8\document_16px.png", UriKind.Relative))
 
     Public Shared Function GetFileExtensionIcon(Extension As String) As BitmapSource
         If Not UserSettings.GetFileIcons Then

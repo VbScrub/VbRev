@@ -46,7 +46,6 @@ Public Class VbRevServer
             End Try
             Try
                 If Not Message Is Nothing Then
-                    Log.WriteEntry("Server received " & Message.Type.ToString, False)
                     Select Case Message.Type
                         Case NetworkMessage.MessageType.KeepAlive
                             _NetClient.Send(New EmptyMessage(NetworkMessage.MessageType.KeepAliveResponse))
@@ -104,6 +103,14 @@ Public Class VbRevServer
                             _NetClient.Send(OsHelper.GetOsInfo)
                         Case NetworkMessage.MessageType.EnumServicesRequest
                             _NetClient.Send(New EnumServicesResponseMessage(ServiceHelper.GetServices(DirectCast(Message, SingleParamMessage(Of Boolean)).Parameter)))
+                        Case NetworkMessage.MessageType.UserInfoRequest
+                            _NetClient.Send(New UserInfoResponseMessage(UserHelper.GetGroups, Security.Principal.WindowsIdentity.GetCurrent.User.ToString, UserHelper.GetSessionId))
+                        Case NetworkMessage.MessageType.StartServiceRequest
+                            ServiceHelper.StartService(DirectCast(Message, SingleParamMessage(Of String)).Parameter)
+                            SendSuccessResponse()
+                        Case NetworkMessage.MessageType.StopServiceRequest
+                            ServiceHelper.StopService(DirectCast(Message, SingleParamMessage(Of String)).Parameter)
+                            SendSuccessResponse()
                         Case Else
                             _NetClient.Send(New EmptyMessage(NetworkMessage.MessageType.UnrecognisedMessageType))
                     End Select
@@ -161,13 +168,6 @@ Public Class VbRevServer
             Info.Username = System.Security.Principal.WindowsIdentity.GetCurrent(Security.Principal.TokenAccessLevels.Query).Name
         Catch ex As Exception
             Info.Username = If(String.IsNullOrWhiteSpace(Environment.UserDomainName), Environment.UserName, Environment.UserDomainName & "\" & Environment.UserName)
-        End Try
-        Try
-            Using Proc As Process = Process.GetCurrentProcess
-                Info.SessionId = Proc.SessionId
-            End Using
-        Catch ex As Exception
-            Log.WriteEntry("Failed to get session ID from current process: " & ex.Message, False)
         End Try
         Info.CurrentDirectory = Environment.CurrentDirectory
         Return Info

@@ -1,0 +1,300 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{DCC3199D-4B9A-4E75-B3C4-11F1E8A2ACC8}</ProjectGuid>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</ProjectTypeGuids>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>VbRevUi</RootNamespace>
+    <AssemblyName>VbRevUi</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <MyType>Custom</MyType>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <IncrementalBuild>true</IncrementalBuild>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DocumentationFile>VbRevUi.xml</DocumentationFile>
+    <NoWarn>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036,42314</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <IncrementalBuild>false</IncrementalBuild>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DocumentationFile>VbRevUi.xml</DocumentationFile>
+    <NoWarn>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036,42314</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionExplicit>On</OptionExplicit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionCompare>Binary</OptionCompare>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionStrict>On</OptionStrict>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionInfer>On</OptionInfer>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>middleware_48.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DocumentationFile>VbRevUi.xml</DocumentationFile>
+    <NoWarn>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036,42314</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\Release\</OutputPath>
+    <DocumentationFile>VbRevUi.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <NoWarn>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036,42314</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Classes\AppHelper.vb" />
+    <Compile Include="Classes\ClientBase.vb" />
+    <Compile Include="Classes\CmdLineClient.vb" />
+    <Compile Include="Classes\IconHelper.vb" />
+    <Compile Include="Classes\NetworkingClient.vb" />
+    <Compile Include="Classes\ProcessClient.vb" />
+    <Compile Include="Classes\ServiceClient.vb" />
+    <Compile Include="Classes\UI\CmdLineTabVM.vb" />
+    <Compile Include="Classes\UI\TabPage.vb" />
+    <Compile Include="Windows\RenameWindow.xaml.vb">
+      <DependentUpon>RenameWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\StartProcessWindow.xaml.vb">
+      <DependentUpon>StartProcessWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\Tab Pages\CmdTabItemHeader.xaml.vb">
+      <DependentUpon>CmdTabItemHeader.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Classes\UI\FileBreadcrumbItem.vb" />
+    <Compile Include="Classes\FileSystemClient.vb" />
+    <Compile Include="Classes\UI\FileSystemItemVM.vb" />
+    <Compile Include="Classes\UI\FileTransferItemVM.vb" />
+    <Compile Include="Classes\UserSettings.vb" />
+    <Compile Include="Classes\VbRevClient.vb" />
+    <Compile Include="Windows\AboutWindow.xaml.vb">
+      <DependentUpon>AboutWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\Tab Pages\CmdLinePage.xaml.vb">
+      <DependentUpon>CmdLinePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\Tab Pages\CmdLineTabItem.xaml.vb">
+      <DependentUpon>CmdLineTabItem.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\Tab Pages\FileSystemPage.xaml.vb">
+      <DependentUpon>FileSystemPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\MachineInfoWindow.xaml.vb">
+      <DependentUpon>MachineInfoWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\MainWindow.xaml.vb">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Application.xaml.vb">
+      <DependentUpon>Application.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Windows\OptionsWindow.xaml.vb">
+      <DependentUpon>OptionsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\Tab Pages\NetworkingPage.xaml.vb">
+      <DependentUpon>NetworkingPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\Tab Pages\ProcessPage.xaml.vb">
+      <DependentUpon>ProcessPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\Tab Pages\RegistryPage.xaml.vb">
+      <DependentUpon>RegistryPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\Tab Pages\ServicesPage.xaml.vb">
+      <DependentUpon>ServicesPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\TransferFilesWindow.xaml.vb">
+      <DependentUpon>TransferFilesWindow.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Import Include="System.Linq" />
+    <Import Include="System.Xml.Linq" />
+    <Import Include="Microsoft.VisualBasic" />
+    <Import Include="System" />
+    <Import Include="System.Collections" />
+    <Import Include="System.Collections.Generic" />
+    <Import Include="System.Diagnostics" />
+    <Import Include="System.Windows" />
+    <Import Include="System.Windows.Controls" />
+    <Import Include="System.Windows.Data" />
+    <Import Include="System.Windows.Documents" />
+    <Import Include="System.Windows.Input" />
+    <Import Include="System.Windows.Shapes" />
+    <Import Include="System.Windows.Media" />
+    <Import Include="System.Windows.Media.Imaging" />
+    <Import Include="System.Windows.Navigation" />
+    <Import Include="VbRev.Shared" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="My Project\AssemblyInfo.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="My Project\MyExtensions\MyWpfExtension.vb">
+      <VBMyExtensionTemplateID>Microsoft.VisualBasic.WPF.MyExtension</VBMyExtensionTemplateID>
+      <VBMyExtensionTemplateVersion>1.0.0.0</VBMyExtensionTemplateVersion>
+    </Compile>
+    <Compile Include="My Project\Resources.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\Settings.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="My Project\Resources.resx">
+      <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
+      <CustomToolNamespace>My.Resources</CustomToolNamespace>
+    </EmbeddedResource>
+    <None Include="My Project\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+    </None>
+    <AppDesigner Include="My Project\" />
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VbRevShared\VbRevShared.vbproj">
+      <Project>{143E457C-C577-421C-884A-6B2580688958}</Project>
+      <Name>VbRevShared</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <SplashScreen Include="Images\VbRevSplash.png" />
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
+  <ItemGroup>
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\Profile\Client\PresentationCore.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\Profile\Client\PresentationFramework.Aero.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\Profile\Client\PresentationFramework.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\Profile\Client\System.Core.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\Profile\Client\System.Data.DataSetExtensions.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\Profile\Client\System.Data.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\Profile\Client\System.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\Profile\Client\System.Windows.Forms.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\Profile\Client\System.Xaml.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\Profile\Client\System.Xml.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\Profile\Client\System.Xml.Linq.dll" />
+    <ReferencePath Include="D:\Dropbox\VB Projects\VbRev\Current\VbRevShared\bin\Debug\VbRev.Shared.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\Profile\Client\WindowsBase.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="D:\Dropbox\VB Projects\VbRev\Current\VbRevUi\obj\Debug\Windows\RenameWindow.g.vb" />
+    <Compile Include="D:\Dropbox\VB Projects\VbRev\Current\VbRevUi\obj\Debug\Windows\StartProcessWindow.g.vb" />
+    <Compile Include="D:\Dropbox\VB Projects\VbRev\Current\VbRevUi\obj\Debug\Windows\Tab Pages\CmdTabItemHeader.g.vb" />
+    <Compile Include="D:\Dropbox\VB Projects\VbRev\Current\VbRevUi\obj\Debug\Windows\AboutWindow.g.vb" />
+    <Compile Include="D:\Dropbox\VB Projects\VbRev\Current\VbRevUi\obj\Debug\Windows\Tab Pages\CmdLinePage.g.vb" />
+    <Compile Include="D:\Dropbox\VB Projects\VbRev\Current\VbRevUi\obj\Debug\Windows\Tab Pages\CmdLineTabItem.g.vb" />
+    <Compile Include="D:\Dropbox\VB Projects\VbRev\Current\VbRevUi\obj\Debug\Windows\Tab Pages\FileSystemPage.g.vb" />
+    <Compile Include="D:\Dropbox\VB Projects\VbRev\Current\VbRevUi\obj\Debug\Windows\MachineInfoWindow.g.vb" />
+    <Compile Include="D:\Dropbox\VB Projects\VbRev\Current\VbRevUi\obj\Debug\Windows\MainWindow.g.vb" />
+    <Compile Include="D:\Dropbox\VB Projects\VbRev\Current\VbRevUi\obj\Debug\Windows\OptionsWindow.g.vb" />
+    <Compile Include="D:\Dropbox\VB Projects\VbRev\Current\VbRevUi\obj\Debug\Windows\Tab Pages\NetworkingPage.g.vb" />
+    <Compile Include="D:\Dropbox\VB Projects\VbRev\Current\VbRevUi\obj\Debug\Windows\Tab Pages\ProcessPage.g.vb" />
+    <Compile Include="D:\Dropbox\VB Projects\VbRev\Current\VbRevUi\obj\Debug\Windows\Tab Pages\RegistryPage.g.vb" />
+    <Compile Include="D:\Dropbox\VB Projects\VbRev\Current\VbRevUi\obj\Debug\Windows\Tab Pages\ServicesPage.g.vb" />
+    <Compile Include="D:\Dropbox\VB Projects\VbRev\Current\VbRevUi\obj\Debug\Windows\TransferFilesWindow.g.vb" />
+    <Compile Include="D:\Dropbox\VB Projects\VbRev\Current\VbRevUi\obj\Debug\Application.g.vb" />
+    <Compile Include="D:\Dropbox\VB Projects\VbRev\Current\VbRevUi\obj\Debug\GeneratedInternalTypeHelper.g.vb" />
+  </ItemGroup>
+</Project>

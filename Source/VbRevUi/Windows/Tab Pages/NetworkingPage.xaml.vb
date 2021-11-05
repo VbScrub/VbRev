@@ -1,6 +1,6 @@
 ﻿Public Class NetworkingPage
 
-    Public Property Client As NetworkingClient
+    Public Property Client As NetworkAdapterClient
 
 
 

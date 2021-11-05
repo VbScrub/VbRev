@@ -1,7 +1,7 @@
 ﻿<Window x:Class="StartProcessWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="New Process"  SizeToContent="Height" Width="504" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Icon="/VbRevUi;component/Images/window_add_48.png">
+    Title="New Process"  SizeToContent="Height" Width="504" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Icon="/VbRevUi;component/Images/IconShock/new_window_48.png">
     <Window.Resources>
         <Style TargetType="TextBlock">
             <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
@@ -21,7 +21,7 @@
             <RowDefinition Height="40" />
         </Grid.RowDefinitions>
         <WrapPanel VerticalAlignment="Center" Margin="10,10,8,8">
-            <Image Name="TitleImg" Stretch="None" Source="/VbRevUi;component/Images/window_add_48.png" />
+            <Image Name="TitleImg" Stretch="None" Source="/VbRevUi;component/Images/IconShock/new_window_48.png" />
             <TextBlock Text="Start New Process" Name="TitleLbl" VerticalAlignment="Center" FontSize="18" Margin="7,0,0,0" Foreground="LightGray" />
         </WrapPanel>
 

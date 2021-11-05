@@ -12,4 +12,7 @@ Public Class EnumServicesResponseMessage : Inherits NetworkMessage
         Me.Type = MessageType.EnumServicesResponse
         Me.ServiceList = Services
     End Sub
+
+
+
 End Class

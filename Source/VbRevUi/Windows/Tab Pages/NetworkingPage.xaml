@@ -24,7 +24,7 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="1">
-                                    <Image Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" VerticalAlignment="Center" Source="/VbRevUi;component/Images/net_card_16.ico" />
+                                    <Image Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" VerticalAlignment="Center" Source="/VbRevUi;component/Images/Icons8/network_card_16px.png" />
                                     <TextBlock VerticalAlignment="Center" Text="{Binding Name}" Margin="4,0,0,0" />
                                 </StackPanel>
                             </DataTemplate>
@@ -71,7 +71,7 @@
                     <Grid DockPanel.Dock="Top" VerticalAlignment="Top">
                         <Button HorizontalAlignment="Left" Height="23" Name="RefreshListenersBtn" Content="Load" Padding="18,0,18,0" />
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Image Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" VerticalAlignment="Center" Source="/VbRevUi;component/Images/zoom_16.png" />
+                            <Image Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" VerticalAlignment="Center" Source="/VbRevUi;component/Images/Icons8/search_16px.png" />
                             <TextBlock Text="Filter: " VerticalAlignment="Center" Margin="2,0,0,0" />
                             <TextBox Width="150" Name="FilterListenersBox" TextChanged="FilterListenersBox_TextChanged" />
                         </StackPanel>
@@ -87,7 +87,7 @@
                             <GridView>
                                 <GridViewColumn Header="Address" Width="120" DisplayMemberBinding="{Binding IpAddress}" />
                                 <GridViewColumn Header="Port" Width="90" DisplayMemberBinding="{Binding Port}" />
-                                <GridViewColumn Header="Process Name" Width="160" DisplayMemberBinding="{Binding ProcessName}" />
+                                <GridViewColumn Header="Process Name" Width="190" DisplayMemberBinding="{Binding ProcessName}" />
                                 <GridViewColumn Header="Process ID" Width="90" DisplayMemberBinding="{Binding PID}" />
                             </GridView>
                         </ListView.View>

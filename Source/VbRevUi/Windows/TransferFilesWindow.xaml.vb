@@ -161,14 +161,17 @@ Public Class TransferFilesWindow
         Dim TransferItem As FileTransferItem = DirectCast(Result.AsyncState, FileTransferItem)
         _ThreadSignal.Set() 'stop timeout error from appearing as we only get here if we received a connection from server
         Try
+
             Dim Client As New NetworkSession(Listener.EndAcceptTcpClient(Result), False, TimeSpan.FromSeconds(UserSettings.NetworkReadTimeoutSeconds))
             Listener.Stop()
             If _Cancelled Then
                 TransferItem.RequestCancellation()
             Else
                 If IsUpload Then
+                    Threading.Thread.CurrentThread.Name = "CLIENT_UPLOAD_FILE"
                     TransferItem.SendFile(Client)
                 Else
+                    Threading.Thread.CurrentThread.Name = "CLIENT_DOWNLOAD_FILE"
                     TransferItem.ReceiveFile(Client, True)
                 End If
             End If
@@ -222,7 +225,7 @@ Public Class TransferFilesWindow
                                     If OpenAutoChk.IsChecked AndAlso Not IsUpload Then
                                         OpenFile(_TransferVmList(0), True)
                                     Else
-                                        TitleImg.Source = New BitmapImage(New Uri("\..\Images\ok_48.png", UriKind.Relative))
+                                        TitleImg.Source = New BitmapImage(New Uri("\..\Images\Icons8\ok_48px.png", UriKind.Relative))
                                         OpenBtn.IsEnabled = True
                                         Me.Title = _TransferModeName & " Complete"
                                     End If
@@ -262,7 +265,7 @@ Public Class TransferFilesWindow
     End Sub
 
     Private Sub SetFailedUi()
-        TitleImg.Source = New BitmapImage(New Uri("\..\Images\close_b_48.png", UriKind.Relative))
+        TitleImg.Source = New BitmapImage(New Uri("\..\Images\Icons8\cancel_48px.png", UriKind.Relative))
         Me.Title = _TransferModeName & " Failed"
         Me.TitleLbl.Text = Me.Title
         Me.CloseBtn.Visibility = Windows.Visibility.Visible

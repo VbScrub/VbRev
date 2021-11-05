@@ -4,38 +4,66 @@
 
 
     Private Sub StartMenuItem_Click(sender As System.Object, e As System.Windows.RoutedEventArgs)
-        StartService()
+        StartOrStopService(True)
     End Sub
 
     Private Sub StopMenuItem_Click(sender As System.Object, e As System.Windows.RoutedEventArgs)
-        StopService()
+        StartOrStopService(False)
     End Sub
 
     Private Sub ViewAclMenuItem_Click(sender As System.Object, e As System.Windows.RoutedEventArgs)
-        AppHelper.NotInBeta()
+        UiHelper.NotInBeta()
+
     End Sub
 
     Private Sub StartBtn_Click(sender As System.Object, e As System.Windows.RoutedEventArgs) Handles StartBtn.Click
-        StartService()
+        StartOrStopService(True)
     End Sub
 
-    Private Sub StartService()
-        AppHelper.NotInBeta()
-        'Dim Svc As ServiceItem = GetSelectedService()
-        'If Not Svc Is Nothing Then
-
-        'End If
+    Private Sub StartOrStopService(Start As Boolean)
+        Dim Svc As ServiceItem = GetSelectedService()
+        If Not Svc Is Nothing Then
+            Dim BgThread As New System.Threading.Thread(AddressOf ServerStartOrStopService)
+            BgThread.IsBackground = True
+            BgThread.Name = "STARTSTOP_SERVICE_THREAD"
+            RaiseSendingServerRequestEvent(If(Start, "Starting", "Stopping") & " service...")
+            BgThread.Start(New Tuple(Of Boolean, String)(Start, Svc.Name))
+        End If
     End Sub
 
-    Private Sub StopService()
-        AppHelper.NotInBeta()
-        'Dim Svc As ServiceItem = GetSelectedService()
-        'If Not Svc Is Nothing Then
+    Private Sub StartOrStopFinished(ErrorMessage As String)
+        If Me.IsLoaded Then
+            If String.IsNullOrEmpty(ErrorMessage) Then
+                RaiseSendingServerRequestFinishedEvent("Service successfully started/stopped")
+            Else
+                RaiseSendingServerRequestFinishedEvent("Error starting/stopping service")
+                MessageBox.Show(ErrorMessage, "Error Starting/Stopping Service", MessageBoxButton.OK, MessageBoxImage.Error)
+            End If
+            RefreshServices()
+        End If
+    End Sub
 
-        'End If
+    Private Sub ServerStartOrStopService(Args As Object)
+        Dim ErrorMsg As String = String.Empty
+        Dim CastArgs As Tuple(Of Boolean, String) = DirectCast(Args, Tuple(Of Boolean, String))
+        Try
+            If CastArgs.Item1 Then
+                Client.StartService(CastArgs.Item2)
+            Else
+                Client.StopService(CastArgs.Item2)
+            End If
+        Catch ex As Exception
+            ErrorMsg = ex.Message
+        Finally
+            Me.Dispatcher.Invoke(New Action(Of String)(AddressOf StartOrStopFinished), ErrorMsg)
+        End Try
     End Sub
 
     Private Sub RefreshBtn_Click(sender As System.Object, e As System.Windows.RoutedEventArgs) Handles RefreshBtn.Click
+        RefreshServices()
+    End Sub
+
+    Private Sub RefreshServices()
         RefreshBtn.Content = "Refresh"
         Dim BgThread As New System.Threading.Thread(AddressOf GetServices)
         BgThread.IsBackground = True
@@ -77,24 +105,23 @@
     Private Sub CopySvcNameMenuItem_Click(sender As System.Object, e As System.Windows.RoutedEventArgs)
         Dim Svc As ServiceItem = GetSelectedService()
         If Not Svc Is Nothing Then
-            AppHelper.CopyToClipboard(Svc.Name)
+            UiHelper.CopyToClipboard(Svc.Name)
         End If
     End Sub
 
     Private Sub CopyDisplayNameMenuItem_Click(sender As System.Object, e As System.Windows.RoutedEventArgs)
         Dim Svc As ServiceItem = GetSelectedService()
         If Not Svc Is Nothing Then
-            AppHelper.CopyToClipboard(Svc.DisplayName)
+            UiHelper.CopyToClipboard(Svc.DisplayName)
         End If
     End Sub
 
-   
-    Private Sub ExplainRegVsScmLink_Click(sender As System.Object, e As System.Windows.RoutedEventArgs)
-        MessageBox.Show("Reading services from the registry can be done by all users." & Environment.NewLine & Environment.NewLine &
-                        "Querying the Service Control Manager is usually more restricted. " & Environment.NewLine & Environment.NewLine &
-                        "The disadvantage of using the registry method is that live data about each service's current state is not available. Also if someone manually modified the registry data it could be different " &
-                        "to the live config that is being used by the services (until the machine is restarted and then the new registry data would be loaded and used by the SCM)", "Service Collection Methods", MessageBoxButton.OK, MessageBoxImage.Information)
-    End Sub
+
+    'Private Sub ExplainRegVsScmLink_Click(sender As System.Object, e As System.Windows.RoutedEventArgs)
+    '    MessageBox.Show("Reading services from the registry can be done by all users." & Environment.NewLine & Environment.NewLine &
+    '                    "Querying the Service Control Manager is sometimes restricted to specific users/groups. " & Environment.NewLine & Environment.NewLine &
+    '                    "The disadvantage of using the registry method is that service details could have been changed since the config was loaded from the registry", "Service Collection Methods", MessageBoxButton.OK, MessageBoxImage.Information)
+    'End Sub
 
     Private Sub FilterBox_TextChanged(sender As System.Object, e As System.Windows.Controls.TextChangedEventArgs)
         If Not ServicesListView.ItemsSource Is Nothing Then
@@ -123,7 +150,7 @@
     End Function
 
     Private Sub ViewAclBtn_Click(sender As System.Object, e As System.Windows.RoutedEventArgs) Handles ViewAclBtn.Click
-        AppHelper.NotInBeta()
+        UiHelper.NotInBeta()
     End Sub
 
     Private Sub ServicesListView_SelectionChanged(sender As System.Object, e As System.Windows.Controls.SelectionChangedEventArgs) Handles ServicesListView.SelectionChanged
@@ -133,7 +160,7 @@
     Private Sub CopyBinPathMenuItem_Click(sender As System.Object, e As System.Windows.RoutedEventArgs)
         Dim Svc As ServiceItem = GetSelectedService()
         If Not Svc Is Nothing Then
-            AppHelper.CopyToClipboard(Svc.BinPath)
+            UiHelper.CopyToClipboard(Svc.BinPath)
         End If
     End Sub
 
@@ -148,6 +175,8 @@
 
    
     Private Sub StopBtn_Click(sender As System.Object, e As System.Windows.RoutedEventArgs) Handles StopBtn.Click
-        StopService()
+        StartOrStopService(False)
     End Sub
+
+
 End Class

@@ -56,7 +56,7 @@
             </MenuItem>
         </Menu>
 
-        <Grid Grid.Row="1" Name="InitialGrid" Visibility="Collapsed">
+        <Grid Grid.Row="1" Name="InitialGrid" Visibility="Visible">
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                 <WrapPanel Name="PortPanel" >
                     <TextBlock Text="Listen on port " Foreground="White" VerticalAlignment="Center" />
@@ -81,37 +81,45 @@
                
             </StackPanel>
         </Grid>
-        <Grid Grid.Row="1" Name="MainGrid" Visibility="Visible" Margin="1">
+        <Grid Grid.Row="1" Name="MainGrid" Visibility="Collapsed" Margin="1">
            <Button Name="DisconnectBtn" VerticalAlignment="Top" Click="DisconnectBtn_Click" HorizontalAlignment="Right" Height="23" Padding="12,0,12,0" Margin="8,9,8,8">
                 <WrapPanel>
-                    <Image VerticalAlignment="Center" RenderOptions.BitmapScalingMode="NearestNeighbor" Stretch="None" Source="/VbRevUi;component/Images/close_16.png" />
+                    <Image VerticalAlignment="Center" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/VbRevUi;component/Images/Icons8/disconnected_16px.png" />
                     <TextBlock VerticalAlignment="Center" Margin="2,0,0,0" Text="Disconnect" />
                 </WrapPanel>
             </Button>
             <DockPanel Margin="8">
-                <WrapPanel DockPanel.Dock="Top" Margin="0,3,0,0">
-                    <Image Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/VbRevUi;component/Images/monitor_16.png" Margin="0,0,0,-1" VerticalAlignment="Center" />
-                    <TextBlock Text="Connected to: " VerticalAlignment="Center" Margin="3,0,0,0" Foreground="White" />
-                    <TextBlock Name="ConnectedToLbl" Text="unknown" FontWeight="Bold" VerticalAlignment="Center" Margin="2,0,0,0" Foreground="White" />
-                    <TextBlock VerticalAlignment="Center" Margin="6,0,0,0"><Hyperlink Name="MachineInfoLink" Click="MachineInfoLink_Click" Foreground="LightBlue"><Run Text="Details"/></Hyperlink></TextBlock>
-                </WrapPanel>
-                <WrapPanel DockPanel.Dock="Top" Margin="0,6,0,0">
-                    <Image Height="16" Width="16" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/VbRevUi;component/Images/primary_key_16.png" Margin="0,0,0,-1" VerticalAlignment="Center" />
-                    <TextBlock Text="User: " VerticalAlignment="Center" Margin="3,0,0,0" Foreground="White" />
-                    <TextBlock Name="RunningAsLbl" Text="unknown" FontWeight="Bold"  VerticalAlignment="Center" Margin="2,0,0,0" Foreground="White" />
-                    <!--<TextBlock VerticalAlignment="Center" Margin="6,0,0,0"><Hyperlink Name="UserInfoLink" Click="UserInfoLink_Click" Foreground="LightBlue"><Run Text="More"/></Hyperlink></TextBlock>-->
-                </WrapPanel>
+                <StackPanel DockPanel.Dock="Top">
+                    <StackPanel.Resources>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="FontSize" Value="13" />
+                        </Style>
+                    </StackPanel.Resources>
+                    <WrapPanel Margin="0,3,0,0">
+                        <Image Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/VbRevUi;component/Images/IconShock/monitor_24.png" Margin="0,0,0,-1" VerticalAlignment="Center" />
+                        <!--<TextBlock Text="Connected to: " VerticalAlignment="Center" Margin="4,0,0,0" Foreground="White" />-->
+                        <TextBlock Name="ConnectedToLbl" Text="unknown" VerticalAlignment="Center" Margin="5,0,0,0" Foreground="White" />
+                        <TextBlock VerticalAlignment="Center" Margin="6,0,0,0" FontSize="13"><Hyperlink Name="MachineInfoLink" Click="MachineInfoLink_Click" Foreground="LightBlue"><Run Text="Details"/></Hyperlink></TextBlock>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,3,0,0">
+                        <Image Stretch="None"  Source="/VbRevUi;component/Images/Icons8/person_24px.png" Margin="0,0,0,-1" VerticalAlignment="Center" />
+                        <!--<TextBlock Text="User: " VerticalAlignment="Center" Margin="4,0,0,0" Foreground="White" />-->
+                        <TextBlock Name="RunningAsLbl" Text="unknown"   VerticalAlignment="Center" Margin="5,0,0,0" Foreground="White" />
+                        <TextBlock VerticalAlignment="Center" Margin="6,0,0,0"><Hyperlink Name="UserInfoLink" Click="UserInfoLink_Click" Foreground="LightBlue"><Run Text="Details"/></Hyperlink></TextBlock>
+                    </WrapPanel>
+                </StackPanel>
+                
 
                 <TabControl Margin="0,9,0,0" Name="MainTabControl">
                     <TabItem Name="FileExplorerTab" >
                         <TabItem.Header>
-                            <TextBlock Text="File System" />
+                            <TextBlock Text="File System" Padding="6,2,6,2" />
                         </TabItem.Header>
                         <local:FileSystemPage x:Name="FileMainPage" />
                     </TabItem>
                     <TabItem x:Name="RegistryTab">
                         <TabItem.Header>
-                            <TextBlock Text="Registry" />
+                            <TextBlock Text="Registry" Padding="6,2,6,2" />
                         </TabItem.Header>
                         <TextBlock Margin="10">
                             Coming soon. Check <Hyperlink Click="ComingSoonLinks_Click">vbscrub.com</Hyperlink> for updates
@@ -119,19 +127,19 @@
                     </TabItem>
                     <TabItem x:Name="ProcessesTab">
                         <TabItem.Header>
-                            <TextBlock Text="Processes" />
+                            <TextBlock Text="Processes" Padding="6,2,6,2" />
                         </TabItem.Header>
                         <local:ProcessPage x:Name="ProcessMainPage" />
                     </TabItem>
                     <TabItem x:Name="ServicesTab">
                         <TabItem.Header>
-                            <TextBlock Text="Services" />
+                            <TextBlock Text="Services" Padding="6,2,6,2" />
                         </TabItem.Header>
                         <local:ServicesPage x:Name="ServicesMainPage" />
                     </TabItem>
                     <TabItem x:Name="ScheduledTasksTab">
                         <TabItem.Header>
-                            <TextBlock Text="Scheduled Tasks" />
+                            <TextBlock Text="Scheduled Tasks" Padding="6,2,6,2" />
                         </TabItem.Header>
                         <TextBlock Margin="10">
                             Coming soon. Check <Hyperlink Click="ComingSoonLinks_Click">vbscrub.com</Hyperlink> for updates
@@ -139,19 +147,13 @@
                     </TabItem>
                     <TabItem x:Name="CmdTab">
                         <TabItem.Header>
-                            <TextBlock Text="Command Prompt" />
+                            <TextBlock Text="Command Prompt" Padding="6,2,6,2" />
                         </TabItem.Header>
                         <local:CmdLinePage x:Name="CmdMainPage" />
                     </TabItem>
-                    <!--<TabItem x:Name="PowershellTab">
-                        <TabItem.Header>
-                            <TextBlock Text="Powershell" />
-                        </TabItem.Header>
-
-                    </TabItem>-->
                     <TabItem x:Name="PortsTab">
                         <TabItem.Header>
-                            <TextBlock Text="Networking" />
+                            <TextBlock Text="Networking" Padding="6,2,6,2" />
                         </TabItem.Header>
                         <local:NetworkingPage x:Name="NetworkingMainPage" />
                     </TabItem>

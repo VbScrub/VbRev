@@ -88,10 +88,11 @@
                         Timer.Start()
                     End If
                     Dim NetMsg As NetworkMessage = NetClient.ReceiveMessage()
+
                     If NetMsg.Type = NetworkMessage.MessageType.ErrorDetail Then
                         Throw New ApplicationException("Error reported from remote machine: " & DirectCast(NetMsg, SingleParamMessage(Of String)).Parameter)
                     ElseIf Not NetMsg.Type = NetworkMessage.MessageType.TransferFileContent Then
-                        Throw New ApplicationException("Unexpected response from server (expecting " & NetworkMessage.MessageType.TransferFileContent.ToString & " but received " & NetMsg.Type.ToString & ")")
+                        Throw New ApplicationException("Unexpected response from remote machine (expecting " & NetworkMessage.MessageType.TransferFileContent.ToString & " but received " & NetMsg.Type.ToString & ")")
                     End If
                     Dim TransferMessage As FileTransferContentMessage = DirectCast(NetMsg, FileTransferContentMessage)
                     If TransferMessage.IsFinalChunk Then
@@ -118,6 +119,8 @@
             CompletedSuccessfully = True
             If Me.ClientMode Then
                 UpdateProgress(ProgressState.Complete, 100, "Download completed successfully")
+            Else
+                NetClient.Send(New EmptyMessage(NetworkMessage.MessageType.Success))
             End If
         Catch ex As Exception
             Log.WriteEntry("File download error: " & ex.Message, False)
@@ -162,6 +165,7 @@
         End If
 
         Try
+            Log.WriteEntry("Opening file " & Me.SourcePath, True)
             Using File As New IO.FileStream(Me.SourcePath, IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.ReadWrite)
                 If ClientMode Then
                     Dim NetMsg As NetworkMessage = NetClient.ReceiveMessage()
@@ -206,6 +210,12 @@
                 Timer.Stop()
             End Using
             If ClientMode Then
+                Dim NetMsg As NetworkMessage = NetClient.ReceiveMessage()
+                If NetMsg.Type = NetworkMessage.MessageType.ErrorDetail Then
+                    Throw New ApplicationException("Error reported from remote machine: " & DirectCast(NetMsg, SingleParamMessage(Of String)).Parameter)
+                ElseIf Not NetMsg.Type = NetworkMessage.MessageType.Success Then
+                    Throw New ApplicationException("Unexpected response from server (expecting " & NetworkMessage.MessageType.TransferFileContent.ToString & " but received " & NetMsg.Type.ToString & ")")
+                End If
                 UpdateProgress(ProgressState.Complete, 100, "Upload completed successfully")
             End If
         Catch ex As Exception

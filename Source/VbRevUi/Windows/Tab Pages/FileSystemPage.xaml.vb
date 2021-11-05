@@ -278,7 +278,7 @@ Public Class FileSystemPage
     End Sub
 
     Private Sub SearchFilesBtn_Click(sender As System.Object, e As System.Windows.RoutedEventArgs) Handles SearchFilesBtn.Click
-        AppHelper.NotInBeta()
+        UiHelper.NotInBeta()
     End Sub
 
     Private Sub RenameFileBtn_Click(sender As System.Object, e As System.Windows.RoutedEventArgs) Handles RenameFileBtn.Click
@@ -559,7 +559,7 @@ Public Class FileSystemPage
     End Sub
 
     Private Sub ViewFilePermissionsBtn_Click(sender As System.Object, e As System.Windows.RoutedEventArgs) Handles ViewFilePermissionsBtn.Click
-        AppHelper.NotInBeta()
+        UiHelper.NotInBeta()
     End Sub
 
     Private Sub OpenCmdHereMenuItem_Click(sender As System.Object, e As System.Windows.RoutedEventArgs)
