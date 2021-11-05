@@ -1,8 +1,8 @@
 # VbRev
 GUI alternative to netcat etc for reverse shells on Windows machines.
 
-**Update 02/05/2020:** 
-Alpha release (v0.3) is now available to download under the Releases tab. 
+**Update 05/11/2021:** 
+Alpha release (v0.4) is now available to download under the Releases tab. 
 
 More information is available here: https://vbscrub.com/tools/vbrev/
 
